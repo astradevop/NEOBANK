@@ -334,7 +334,7 @@
                 <div>
                   <label for="country" class="block text-sm font-semibold text-slate-200 mb-2">Country</label>
                   <select id="country" class="form-input w-full rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-3 focus:ring-2 focus:ring-teal-500/50">
-                    <option value="" selected>Select Country</option>
+                    <option value="+91" selected>+91 (India)</option>
                   </select>
                 </div>
                 <div>
@@ -657,42 +657,157 @@
     }, 100);
   }
 
-  // Mobile OTP handling
+  // Global variable to store session ID for OTP verification
+  let signupSessionId = null;
+
+  // Mobile OTP handling - REAL BACKEND INTEGRATION
   async function sendOtp(isResend=false){
     const phone = document.getElementById('phone').value.trim();
     const code  = document.getElementById('country').value;
 
-    if(phone.length < 8){ toast('Enter a valid mobile number.'); return; }
+    if(phone.length < 8){ 
+      toast('Enter a valid mobile number.'); 
+      return; 
+    }
 
     try {
       loading(true, isResend ? 'Resending OTP…' : 'Sending OTP…');
-      // Simulate API call for demo
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // 🎯 REAL API CALL: Send OTP to backend
+      const response = await fetch('/users/api/send-otp/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...CSRF()  // Include CSRF token
+        },
+        body: JSON.stringify({
+          phone: phone,
+          country_code: code || '+91'
+        })
+      });
+      
+      const data = await response.json();
       loading(false);
-
-      document.getElementById('otpInfo').textContent = 'OTP sent to your phone';
-      startResendTimer(30);
-      focusFirstOtp();
-      toast('OTP sent successfully (Demo mode)');
+      
+      if (data.success) {
+        // Store session ID for later verification
+        signupSessionId = data.session_id;
+        
+        // Update UI to show OTP was sent
+        document.getElementById('otpInfo').innerHTML = 
+          '<i data-lucide="check-circle" class="h-4 w-4 text-green-400"></i> ' +
+          'OTP sent to your phone';
+        
+        startResendTimer(30);
+        focusFirstOtp();
+        toast('OTP sent successfully! Check console for code.');
+        
+        // Recreate icons after DOM update
+        lucide.createIcons();
+      } else {
+        toast(data.message || 'Failed to send OTP');
+      }
+      
     } catch(e){
-      loading(false); toast('Network error. Try again.');
+      loading(false); 
+      console.error('Send OTP error:', e);
+      toast('Network error. Please try again.');
     }
   }
 
   async function verifyMobileOtp(){
     const code = getOtp();
-    if(code.length!==6){ toast('Enter the 6-digit OTP.'); return; }
+    if(code.length !== 6){ 
+      toast('Enter the 6-digit OTP.'); 
+      return; 
+    }
+    
+    if(!signupSessionId) {
+      toast('Session expired. Please request a new OTP.');
+      return;
+    }
 
     try {
       loading(true, 'Verifying OTP…');
-      // Simulate API call for demo
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // 🎯 REAL API CALL: Verify OTP with backend
+      const response = await fetch('/users/api/verify-otp/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...CSRF()  // Include CSRF token
+        },
+        body: JSON.stringify({
+          session_id: signupSessionId,
+          otp_code: code
+        })
+      });
+      
+      const data = await response.json();
       loading(false);
-
-      toast('OTP verified successfully (Demo mode)');
-      gotoStep(2);
+      
+      if (data.success) {
+        // 🎉 OTP verified successfully!
+        toast('✅ OTP verified successfully!');
+        
+        // Update UI to show verification success
+        document.getElementById('otpInfo').innerHTML = 
+          '<i data-lucide="check-circle" class="h-4 w-4 text-green-400"></i> ' +
+          'Phone verified successfully';
+        
+        // Clear OTP inputs and disable them
+        const otpInputs = document.querySelectorAll('.otp-input');
+        otpInputs.forEach(input => {
+          input.style.borderColor = '#10b981'; // green border
+          input.disabled = true;
+        });
+        
+        // Recreate icons after DOM update
+        lucide.createIcons();
+        
+        // Move to next step after a short delay
+        setTimeout(() => {
+          gotoStep(data.next_step || 2);
+        }, 1000);
+        
+      } else {
+        // Handle different error cases
+        if (data.should_resend) {
+          toast(data.message + ' Click "Resend OTP" to get a new code.');
+          // Enable resend button immediately
+          const resendBtn = document.getElementById('resendBtn');
+          resendBtn.disabled = false;
+          resendBtn.textContent = 'Resend OTP';
+          clearInterval(timer); // Clear existing timer
+        } else {
+          toast(data.message);
+          if (data.attempts_left !== undefined) {
+            toast(`Attempts remaining: ${data.attempts_left}`);
+          }
+        }
+        
+        // Clear the OTP inputs for retry
+        clearOtpInputs();
+      }
+      
     } catch(e){
-      loading(false); toast('Network error. Try again.');
+      loading(false); 
+      console.error('Verify OTP error:', e);
+      toast('Network error. Please try again.');
+    }
+  }
+  
+  // Helper function to clear OTP inputs
+  function clearOtpInputs() {
+    const otpInputs = document.querySelectorAll('.otp-input');
+    otpInputs.forEach(input => {
+      input.value = '';
+      input.style.borderColor = ''; // Reset border color
+      input.disabled = false;
+    });
+    // Focus on first input
+    if (otpInputs.length > 0) {
+      otpInputs[0].focus();
     }
   }
 
