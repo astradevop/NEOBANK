@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NeoBank — Secure Signup (Mobile + KYC)</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Global Styles -->
+  <style>
+    html { 
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+    }
+    .glass { 
+      backdrop-filter: blur(25px);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+    }
+    .card-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.05);
+    }
+    .hide-scrollbar {
+      scrollbar-width: none;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Enhanced animations */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+      33% { transform: translateY(-20px) rotate(1deg) scale(1.05); }
+      66% { transform: translateY(10px) rotate(-1deg) scale(0.95); }
+    }
+
+    @keyframes slideIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(20, 184, 166, 0.3); }
+      50% { box-shadow: 0 0 40px rgba(20, 184, 166, 0.6); }
+    }
+
+    @keyframes progress {
+      0% { transform: scaleX(0); }
+      100% { transform: scaleX(1); }
+    }
+
+    .floating-bg {
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .floating-bg:nth-child(2) {
+      animation-delay: -2s;
+      animation-duration: 12s;
+    }
+
+    .floating-bg:nth-child(3) {
+      animation-delay: -4s;
+      animation-duration: 10s;
+    }
+
+    .floating-bg:nth-child(4) {
+      animation-delay: -6s;
+      animation-duration: 14s;
+    }
+
+    .step-enter {
+      animation: slideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .signup-bg {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%);
+      position: relative;
+    }
+
+    .signup-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(20, 184, 166, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(34, 211, 238, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 50% 20%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .form-input {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .form-input:focus {
+      background: rgba(30, 41, 59, 0.8);
+      box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.4), 0 0 20px rgba(20, 184, 166, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .step-progress {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .step-progress.active {
+      background: linear-gradient(135deg, #14b8a6, #22d3ee);
+      box-shadow: 0 4px 15px rgba(20, 184, 166, 0.4);
+      transform: scale(1.1);
+    }
+
+    .otp-input {
+      transition: all 0.2s ease;
+    }
+
+    .otp-input:focus {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.5), 0 0 15px rgba(20, 184, 166, 0.3);
+    }
+
+    .success-animation {
+      animation: slideIn 1s cubic-bezier(0.4, 0, 0.2, 1), glow 2s ease-in-out infinite;
+    }
+
+    .sidebar-card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar-card:hover {
+      background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+      border: 1px solid rgba(20, 184, 166, 0.3);
+      transform: translateY(-4px);
+    }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 signup-bg">
+
+<!-- Enhanced Header -->
+<header class="sticky top-0 z-30 border-b border-white/10 bg-slate-950/90 backdrop-blur-xl shadow-xl">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-3 group">
+      <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-400 text-slate-900 font-black text-xl group-hover:scale-110 transition-transform duration-300">N</span>
+      <span class="text-2xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">NeoBank</span>
+    </a>
+    <div class="flex items-center gap-6">
+      <div class="hidden sm:flex items-center gap-4 text-sm text-slate-400">
+        <div class="flex items-center gap-2">
+          <i data-lucide="shield-check" class="h-4 w-4 text-teal-400"></i>
+          <span>KYC-ready</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i data-lucide="lock" class="h-4 w-4 text-cyan-400"></i>
+          <span>Bank-grade security</span>
+        </div>
+      </div>
+      <a href="login.html" class="px-4 py-2 rounded-xl border border-slate-700/50 hover:border-teal-500/50 text-slate-300 hover:text-white transition-colors duration-200">
+        Login
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="relative">
+  <!-- Enhanced floating background elements -->
+  <div class="absolute inset-0 -z-10 overflow-hidden">
+    <div class="floating-bg absolute -top-24 -left-24 w-96 h-96 rounded-full bg-gradient-to-br from-teal-600/25 to-emerald-500/15 blur-3xl"></div>
+    <div class="floating-bg absolute -bottom-24 -right-24 w-[34rem] h-[34rem] rounded-full bg-gradient-to-tr from-cyan-500/15 to-blue-500/10 blur-3xl"></div>
+    <div class="floating-bg absolute top-1/3 left-1/2 w-64 h-64 rounded-full bg-gradient-to-bl from-purple-500/10 to-pink-500/5 blur-2xl"></div>
+    <div class="floating-bg absolute bottom-1/3 left-1/4 w-48 h-48 rounded-full bg-gradient-to-tr from-orange-500/10 to-yellow-500/5 blur-xl"></div>
+  </div>
+
+  <section class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12 lg:py-20 grid lg:grid-cols-2 gap-12 items-start">
+    <!-- Enhanced Sidebar -->
+    <aside class="hidden lg:block space-y-8">
+      <div class="sidebar-card card-hover p-8 rounded-3xl">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center">
+            <i data-lucide="user-plus" class="h-6 w-6 text-slate-900"></i>
+          </div>
+          <h2 class="text-3xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">Create Your Account</h2>
+        </div>
+        <p class="text-slate-300 text-lg leading-relaxed mb-6">
+          It takes ~2 minutes. Keep your <strong class="text-teal-300">phone</strong>, <strong class="text-cyan-300">Aadhaar</strong>, and <strong class="text-purple-300">PAN</strong> handy for verification.
+        </p>
+        <div class="space-y-4">
+          <div class="flex items-center gap-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-400/20">
+            <div class="h-8 w-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+              <i data-lucide="shield-check" class="h-4 w-4 text-emerald-400"></i>
+            </div>
+            <p class="text-sm text-slate-300">Your data is encrypted and used only for verification.</p>
+          </div>
+          <div class="flex items-center gap-4 p-3 rounded-xl bg-cyan-500/10 border border-cyan-400/20">
+            <div class="h-8 w-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
+              <i data-lucide="eye-off" class="h-4 w-4 text-cyan-400"></i>
+            </div>
+            <p class="text-sm text-slate-300">We never store full Aadhaar; only masked references.</p>
+          </div>
+          <div class="flex items-center gap-4 p-3 rounded-xl bg-purple-500/10 border border-purple-400/20">
+            <div class="h-8 w-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+              <i data-lucide="lock" class="h-4 w-4 text-purple-400"></i>
+            </div>
+            <p class="text-sm text-slate-300">You can freeze your account anytime.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-card card-hover p-6 rounded-3xl">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-orange-500 to-red-400 flex items-center justify-center">
+            <i data-lucide="headphones" class="h-5 w-5 text-white"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white">Need help?</h3>
+        </div>
+        <p class="text-slate-300 leading-relaxed mb-4">Chat with support 24×7 or email us anytime</p>
+        <div class="flex gap-3">
+          <button class="flex-1 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500/20 to-red-400/10 border border-orange-400/30 text-orange-300 hover:bg-orange-500/30 transition-colors duration-200">
+            <i data-lucide="message-circle" class="h-4 w-4 mr-2 inline"></i>
+            Chat
+          </button>
+          <button class="flex-1 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500/20 to-purple-400/10 border border-blue-400/30 text-blue-300 hover:bg-blue-500/30 transition-colors duration-200">
+            <i data-lucide="mail" class="h-4 w-4 mr-2 inline"></i>
+            Email
+          </button>
+        </div>
+      </div>
+
+      <!-- Security Features -->
+      <div class="sidebar-card p-6 rounded-3xl">
+        <h4 class="font-semibold text-white mb-4 flex items-center gap-2">
+          <i data-lucide="award" class="h-5 w-5 text-yellow-400"></i>
+          Why Choose NeoBank?
+        </h4>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div class="text-center p-3 rounded-xl bg-slate-800/30">
+            <div class="text-2xl font-bold text-teal-400 mb-1">-</div>
+            <div class="text-slate-400">Happy Users</div>
+          </div>
+          <div class="text-center p-3 rounded-xl bg-slate-800/30">
+            <div class="text-2xl font-bold text-cyan-400 mb-1">-</div>
+            <div class="text-slate-400">Transactions</div>
+          </div>
+          <div class="text-center p-3 rounded-xl bg-slate-800/30">
+            <div class="text-2xl font-bold text-emerald-400 mb-1">-</div>
+            <div class="text-slate-400">App Rating</div>
+          </div>
+          <div class="text-center p-3 rounded-xl bg-slate-800/30">
+            <div class="text-2xl font-bold text-purple-400 mb-1">-</div>
+            <div class="text-slate-400">Uptime</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Enhanced Main Form -->
+    <section class="relative">
+      <div class="relative rounded-3xl glass p-8 sm:p-10 card-hover">
+        <!-- Enhanced Progress Indicator -->
+        <div class="mb-10">
+          <div class="flex items-center justify-between text-sm font-medium mb-4">
+            <span class="text-slate-300">Step <span id="currentStep">1</span> of 5</span>
+            <span class="text-teal-400"><span id="progress">20</span>% Complete</span>
+          </div>
+          <div class="w-full bg-slate-800/50 rounded-full h-2 mb-6">
+            <div id="progressBar" class="bg-gradient-to-r from-teal-500 to-cyan-400 h-2 rounded-full transition-all duration-500 ease-out" style="width: 20%"></div>
+          </div>
+          <ol class="flex items-center justify-between text-xs">
+            <li class="step-item flex flex-col items-center gap-2 relative">
+              <span class="step-dot step-progress active h-10 w-10 rounded-full flex items-center justify-center bg-teal-500 text-slate-900 font-bold text-sm shadow-lg">1</span>
+              <span class="text-slate-300 font-medium">Mobile</span>
+              <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
+                <i data-lucide="smartphone" class="h-4 w-4 text-teal-400"></i>
+              </div>
+            </li>
+            <div class="flex-1 h-px bg-white/10 mx-4 mt-5"></div>
+            <li class="step-item flex flex-col items-center gap-2 opacity-70 relative">
+              <span class="step-dot step-progress h-10 w-10 rounded-full flex items-center justify-center bg-white/10 text-slate-400 font-bold text-sm">2</span>
+              <span class="text-slate-400 font-medium">Details</span>
+              <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
+                <i data-lucide="user" class="h-4 w-4 text-slate-600"></i>
+              </div>
+            </li>
+            <div class="flex-1 h-px bg-white/10 mx-4 mt-5"></div>
+            <li class="step-item flex flex-col items-center gap-2 opacity-70 relative">
+              <span class="step-dot step-progress h-10 w-10 rounded-full flex items-center justify-center bg-white/10 text-slate-400 font-bold text-sm">3</span>
+              <span class="text-slate-400 font-medium">Aadhaar</span>
+              <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
+                <i data-lucide="fingerprint" class="h-4 w-4 text-slate-600"></i>
+              </div>
+            </li>
+            <div class="flex-1 h-px bg-white/10 mx-4 mt-5"></div>
+            <li class="step-item flex flex-col items-center gap-2 opacity-70 relative">
+              <span class="step-dot step-progress h-10 w-10 rounded-full flex items-center justify-center bg-white/10 text-slate-400 font-bold text-sm">4</span>
+              <span class="text-slate-400 font-medium">PAN</span>
+              <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
+                <i data-lucide="credit-card" class="h-4 w-4 text-slate-600"></i>
+              </div>
+            </li>
+            <div class="flex-1 h-px bg-white/10 mx-4 mt-5"></div>
+            <li class="step-item flex flex-col items-center gap-2 opacity-70 relative">
+              <span class="step-dot step-progress h-10 w-10 rounded-full flex items-center justify-center bg-white/10 text-slate-400 font-bold text-sm">5</span>
+              <span class="text-slate-400 font-medium">Passcode</span>
+              <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
+                <i data-lucide="shield-check" class="h-4 w-4 text-slate-600"></i>
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        <form id="signupForm" class="mt-8 space-y-8">
+          <!-- Step 1: Mobile Verification -->
+          <div id="step-1" class="step step-enter">
+            <div class="text-center mb-8">
+              <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="smartphone" class="h-8 w-8 text-slate-900"></i>
+              </div>
+              <h2 class="text-3xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">Verify Mobile Number</h2>
+              <p class="mt-3 text-slate-400 max-w-md mx-auto leading-relaxed">We'll send a secure 6-digit OTP to your number for verification</p>
+            </div>
+            <div class="space-y-6">
+              <div class="grid sm:grid-cols-[140px_1fr_auto] gap-4 items-end">
+                <div>
+                  <label for="country" class="block text-sm font-semibold text-slate-200 mb-2">Country</label>
+                  <select id="country" class="form-input w-full rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-3 focus:ring-2 focus:ring-teal-500/50">
+                    <option value="" selected>Select Country</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="phone" class="block text-sm font-semibold text-slate-200 mb-2">Mobile Number</label>
+                  <div class="relative">
+                    <input id="phone" inputmode="numeric" maxlength="10" placeholder="" class="form-input w-full rounded-2xl border border-white/10 bg-slate-900/60 pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-teal-500/50" required />
+                    <i data-lucide="phone" class="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400"></i>
+                  </div>
+                </div>
+                <button type="button" id="sendOtpBtn" onclick="sendOtp()" class="h-12 px-6 rounded-2xl bg-gradient-to-r from-teal-600 to-cyan-500 hover:from-teal-700 hover:to-cyan-600 text-white font-semibold border border-teal-500/50 transition-all duration-200 flex items-center gap-2">
+                  <i data-lucide="send" class="h-4 w-4"></i>
+                  Send OTP
+                </button>
+              </div>
+
+              <div class="space-y-4">
+                <label class="block text-sm font-semibold text-slate-200">Enter OTP</label>
+                <div class="otp grid grid-cols-6 gap-3" aria-label="Enter 6 digit OTP">
+                  <input class="otp-input text-center text-2xl h-14 rounded-2xl border-2 border-white/10 bg-slate-900/60 font-bold focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500/50" inputmode="numeric" maxlength="1" />
+                  <input class="otp-input text-center text-2xl h-14 rounded-2xl border-2 border-white/10 bg-slate-900/60 font-bold focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500/50" inputmode="numeric" maxlength="1" />
+                  <input class="otp-input text-center text-2xl h-14 rounded-2xl border-2 border-white/10 bg-slate-900/60 font-bold focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500/50" inputmode="numeric" maxlength="1" />
+                  <input class="otp-input text-center text-2xl h-14 rounded-2xl border-2 border-white/10 bg-slate-900/60 font-bold focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500/50" inputmode="numeric" maxlength="1" />
+                  <input class="otp-input text-center text-2xl h-14 rounded-2xl border-2 border-white/10 bg-slate-900/60 font-bold focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500/50" inputmode="numeric" maxlength="1" />
+                  <input class="otp-input text-center text-2xl h-14 rounded-2xl border-2 border-white/10 bg-slate-900/60 font-bold focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500/50" inputmode="numeric" maxlength="1" />
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+                <p id="otpInfo" class="text-slate-400 flex items-center gap-2">
+                  <i data-lucide="info" class="h-4 w-4"></i>
+                  Enter the code sent to your phone
+                </p>
+                <button type="button" id="resendBtn" onclick="sendOtp(true)" class="text-teal-400 hover:text-teal-300 font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-200" disabled>
+                  Resend in 30s
+                </button>
+              </div>
+            </div>
+            <div class="mt-8 flex justify-between">
+              <a href="index.html" class="px-6 py-3 rounded-2xl border border-slate-700/50 hover:border-slate-600/50 text-slate-300 hover:text-white transition-all duration-200 flex items-center gap-2">
+                <i data-lucide="arrow-left" class="h-4 w-4"></i>
+                Cancel
+              </a>
+              <button type="button" onclick="verifyMobileOtp()" class="px-8 py-3 rounded-2xl bg-gradient-to-r from-teal-600 to-cyan-500 hover:from-teal-700 hover:to-cyan-600 text-white font-semibold shadow-lg shadow-teal-900/30 transition-all duration-200 flex items-center gap-2">
+                Verify & Continue
+                <i data-lucide="arrow-right" class="h-4 w-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 2: Personal Details -->
+          <div id="step-2" class="step hidden">
+            <h2 class="text-xl font-semibold">Personal Details</h2>
+            <p class="mt-1 text-sm text-slate-400">Please provide your personal information for KYC verification.</p>
+            <div class="mt-5 grid sm:grid-cols-2 gap-4">
+              <div>
+                <label for="fullName" class="block text-sm font-medium">Full Name</label>
+                <input id="fullName" name="fullName" placeholder="" class="mt-1 w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500" required />
+              </div>
+              <div>
+                <label for="email" class="block text-sm font-medium">Email</label>
+                <input id="email" name="email" type="email"
+                  placeholder=""
+                  class="mt-1 w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500"
+                  required />
+              </div>
+              <div>
+                <label for="dob" class="block text-sm font-medium">Date of Birth</label>
+                <input id="dob" name="dob" type="date" class="mt-1 w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500" required />
+              </div>
+              <div>
+                <label for="gender" class="block text-sm font-medium">Gender</label>
+                <select id="gender" name="gender" class="mt-1 w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500" required>
+                  <option value="">Select Gender</option>
+                  <option value="M">Male</option>
+                  <option value="F">Female</option>
+                  <option value="O">Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="mt-6 flex justify-between">
+              <button type="button" onclick="gotoStep(1)" class="px-4 py-2 rounded-xl border border-white/10">Back</button>
+              <button type="button" onclick="handlePersonalSubmit()" class="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white">Continue</button>
+            </div>
+          </div>
+
+          <!-- Step 3: Aadhaar -->
+          <div id="step-3" class="step hidden">
+            <h2 class="text-xl font-semibold">Link your Aadhaar</h2>
+            <p class="mt-1 text-sm text-slate-400">We will send a consent request and mask your Aadhaar in records.</p>
+            <div class="mt-5 grid gap-4">
+              <div>
+                <label for="aadhaar" class="block text-sm font-medium">Aadhaar Number</label>
+                <input id="aadhaar" name="aadhaar" inputmode="numeric" maxlength="14" placeholder="" class="mt-1 w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500 tracking-widest" required />
+                <p class="mt-2 text-xs text-slate-400">12 digits. We'll only store a masked token.</p>
+              </div>
+              <div>
+                <label for="address" class="block text-sm font-medium">Current Address</label>
+                <input id="address" name="address" placeholder="" class="mt-1 w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500" required />
+              </div>
+              <div class="flex items-center gap-2">
+                <input id="aadhaarConsent" type="checkbox" class="h-4 w-4 rounded border-white/20 bg-slate-900/60" required />
+                <label for="aadhaarConsent" class="text-sm text-slate-300">I authorize e-KYC using Aadhaar through UIDAI-compliant flow.</label>
+              </div>
+            </div>
+            <div class="mt-6 flex justify-between">
+              <button type="button" onclick="gotoStep(2)" class="px-4 py-2 rounded-xl border border-white/10">Back</button>
+              <button type="button" onclick="handleAadhaarSubmit()" class="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white">Continue</button>
+            </div>
+          </div>
+
+          <!-- Step 4: PAN -->
+          <div id="step-4" class="step hidden">
+            <h2 class="text-xl font-semibold">Verify your PAN</h2>
+            <p class="mt-1 text-sm text-slate-400">We use PAN to perform basic KYC and check eligibility.</p>
+            <div class="mt-5 grid gap-4">
+              <div>
+                <label for="pan" class="block text-sm font-medium">PAN</label>
+                <input id="pan" name="pan" maxlength="10" autocomplete="off" placeholder="" class="mt-1 w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500 uppercase tracking-widest" required />
+                <p id="panHelp" class="mt-2 text-xs text-slate-400">Format: 5 letters, 4 digits, 1 letter</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <input id="panConsent" type="checkbox" class="h-4 w-4 rounded border-white/20 bg-slate-900/60" required />
+                <label for="panConsent" class="text-sm text-slate-300">I consent to verify my PAN with the issuer for KYC.</label>
+              </div>
+            </div>
+            <div class="mt-6 flex justify-between">
+              <button type="button" onclick="gotoStep(3)" class="px-4 py-2 rounded-xl border border-white/10">Back</button>
+              <button type="button" onclick="handlePanSubmit()" class="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white">Continue</button>
+            </div>
+          </div>
+
+          <!-- Step 5: Passcode -->
+          <div id="step-5" class="step hidden">
+            <h2 class="text-xl font-semibold">Set your 6-digit passcode</h2>
+            <p class="mt-1 text-sm text-slate-400">You'll use this to log in on this device.</p>
+            <div class="mt-5 grid gap-4 sm:grid-cols-2">
+              <div>
+                <label for="pin" class="block text-sm font-medium">Passcode</label>
+                <input id="pin" type="password" inputmode="numeric" maxlength="6" placeholder="••••••" class="mt-1 w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 focus:ring-2 focus:ring-teal-500" required />
+              </div>
+              <div>
+                <label for="pin2" class="block text-sm font-medium">Confirm passcode</label>
+                <input id="pin2" type="password" inputmode="numeric" maxlength="6" placeholder="••••••" class="mt-1 w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 focus:ring-2 focus:ring-teal-500" required />
+              </div>
+              <div class="sm:col-span-2 flex items-start gap-2">
+                <input id="terms" type="checkbox" class="mt-1 h-4 w-4 rounded border-white/20 bg-slate-900/60" required />
+                <label for="terms" class="text-sm text-slate-300">I agree to the <a class="underline decoration-dotted" href="#">Terms</a> and <a class="underline decoration-dotted" href="#">Privacy Policy</a>.</label>
+              </div>
+            </div>
+            <div class="mt-6 flex justify-between">
+              <button type="button" onclick="gotoStep(4)" class="px-4 py-2 rounded-xl border border-white/10">Back</button>
+              <button type="submit" class="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white">Create Account</button>
+            </div>
+          </div>
+        </form>
+
+        <div id="successState" class="hidden mt-8">
+          <div class="text-center mb-6">
+            <div class="mx-auto h-14 w-14 rounded-2xl bg-emerald-500 text-slate-900 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20.3 7.7l-1.4-1.4z"/></svg>
+            </div>
+            <h3 class="mt-4 text-2xl font-bold">Welcome to NeoBank!</h3>
+            <p class="mt-1 text-slate-300">Your account has been created successfully.</p>
+          </div>
+
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-6 mb-6">
+            <h4 class="text-lg font-semibold mb-4 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+              Account Details
+            </h4>
+            <div class="grid gap-3 text-sm">
+              <div class="flex justify-between">
+                <span class="text-slate-400">Username:</span>
+                <span id="acc-username" class="font-mono">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Account Number:</span>
+                <span id="acc-number" class="font-mono text-teal-300">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Full Name:</span>
+                <span id="acc-name">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Email:</span>
+                <span id="acc-email">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Phone:</span>
+                <span id="acc-phone" class="font-mono">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Created:</span>
+                <span id="acc-created">-</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-xl bg-blue-500/10 border border-blue-500/20 p-4 mb-6">
+            <div class="flex gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m9 12 2 2 4-4"></path>
+              </svg>
+              <div class="text-sm">
+                <p class="text-blue-300 font-medium">Account details sent to your email</p>
+                <p class="text-blue-200/80 mt-1">Please keep this information secure and verify your email to activate all features.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center">
+            <a href="dashboard.html" class="inline-flex px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-medium">Access Dashboard</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+</main>
+
+<footer class="py-10 border-t border-white/5">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 text-xs text-slate-400">
+    <p>For demo purposes only. Integrate with your backend for real e-KYC (PAN/Aadhaar) and OTP delivery via a compliant provider.</p>
+  </div>
+</footer>
+
+<script>
+  // ===== UTILITY FUNCTIONS =====
+
+  /** Get CSRF token from cookies for API requests */
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  /** Generate CSRF headers for fetch requests */
+  const CSRF = () => ({ 'X-CSRFToken': getCookie('csrftoken') });
+
+  /** Extract only digits from string */
+  const onlyDigits = (s) => s.replace(/\D+/g, '');
+
+  /** PAN validation regex */
+  const PAN_REGEX = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
+
+  /** Available signup steps */
+  const steps = [1,2,3,4,5];
+
+  function gotoStep(n){
+    steps.forEach(i=>{
+      const stepEl = document.getElementById(`step-${i}`);
+      if(stepEl) {
+        stepEl.classList.add('hidden');
+        stepEl.classList.remove('step-enter');
+      }
+    });
+    const currentStep = document.getElementById(`step-${n}`);
+    if(currentStep) {
+      currentStep.classList.remove('hidden');
+      currentStep.classList.add('step-enter');
+    }
+
+    // Update progress indicators
+    document.getElementById('currentStep').textContent = n;
+    const progress = n * 20;
+    document.getElementById('progress').textContent = progress;
+    document.getElementById('progressBar').style.width = `${progress}%`;
+
+    // Update step dots and progress UI
+    const items = document.querySelectorAll('.step-item');
+    items.forEach((el, idx)=>{
+      const dot = el.querySelector('.step-dot');
+      const icon = el.querySelector('i');
+      if(idx + 1 <= n){
+        el.classList.remove('opacity-70');
+        dot.classList.add('bg-teal-500','text-slate-900', 'active');
+        dot.classList.remove('bg-white/10', 'text-slate-400');
+        if(icon) {
+          icon.classList.remove('text-slate-600');
+          icon.classList.add('text-teal-400');
+        }
+      } else if(idx + 1 === n + 1){
+        // Next step - partially highlighted
+        el.classList.remove('opacity-70');
+        el.classList.add('opacity-90');
+        dot.classList.remove('bg-teal-500','text-slate-900', 'active');
+        dot.classList.add('bg-white/20', 'text-slate-300');
+        if(icon) {
+          icon.classList.remove('text-slate-600');
+          icon.classList.add('text-slate-500');
+        }
+      } else {
+        el.classList.add('opacity-70');
+        dot.classList.remove('bg-teal-500','text-slate-900', 'active', 'bg-white/20', 'text-slate-300');
+        dot.classList.add('bg-white/10', 'text-slate-400');
+        if(icon) {
+          icon.classList.remove('text-teal-400', 'text-slate-500');
+          icon.classList.add('text-slate-600');
+        }
+      }
+      dot.textContent = idx + 1;
+    });
+
+    // Add a small delay before scrolling for better UX
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  }
+
+  // Mobile OTP handling
+  async function sendOtp(isResend=false){
+    const phone = document.getElementById('phone').value.trim();
+    const code  = document.getElementById('country').value;
+
+    if(phone.length < 8){ toast('Enter a valid mobile number.'); return; }
+
+    try {
+      loading(true, isResend ? 'Resending OTP…' : 'Sending OTP…');
+      // Simulate API call for demo
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      loading(false);
+
+      document.getElementById('otpInfo').textContent = 'OTP sent to your phone';
+      startResendTimer(30);
+      focusFirstOtp();
+      toast('OTP sent successfully (Demo mode)');
+    } catch(e){
+      loading(false); toast('Network error. Try again.');
+    }
+  }
+
+  async function verifyMobileOtp(){
+    const code = getOtp();
+    if(code.length!==6){ toast('Enter the 6-digit OTP.'); return; }
+
+    try {
+      loading(true, 'Verifying OTP…');
+      // Simulate API call for demo
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      loading(false);
+
+      toast('OTP verified successfully (Demo mode)');
+      gotoStep(2);
+    } catch(e){
+      loading(false); toast('Network error. Try again.');
+    }
+  }
+
+  // Personal details submit
+  async function handlePersonalSubmit(){
+    const name = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const dob = document.getElementById('dob').value;
+    const gender = document.getElementById('gender').value;
+
+    if(!name || !email || !dob || !gender){ 
+      toast('Please complete all personal details.'); 
+      return; 
+    }
+
+    try {
+      loading(true, 'Saving personal details…');
+      // Simulate API call for demo
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      loading(false);
+
+      toast('Personal details saved successfully (Demo mode)');
+      gotoStep(3);
+    } catch(e){
+      loading(false); 
+      toast('Network error. Try again.');
+    }
+  }
+
+  // Aadhaar formatting & submit
+  const aadhaarEl = document.getElementById('aadhaar');
+  aadhaarEl.addEventListener('input', (e)=>{
+    let v = onlyDigits(e.target.value).slice(0,12);
+    v = v.replace(/(\d{4})(?=\d)/g, '$1 ');
+    e.target.value = v;
+  });
+
+  async function handleAadhaarSubmit(){
+    const aadhaar = onlyDigits(document.getElementById('aadhaar').value);
+    const address = document.getElementById('address').value.trim();
+    const consent = document.getElementById('aadhaarConsent').checked;
+
+    if(aadhaar.length!==12){ toast('Enter a 12-digit Aadhaar number.'); return; }
+    if(!address || !consent){ toast('Please provide address and consent.'); return; }
+
+    try {
+      loading(true, 'Linking Aadhaar…');
+      // Simulate API call for demo
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      loading(false);
+
+      toast('Aadhaar linked successfully (Demo mode)');
+      gotoStep(4);
+    } catch (e) {
+      loading(false);
+      toast('Network error. Try again.');
+    }
+  }
+
+  // PAN formatting & submit
+  const panEl = document.getElementById('pan');
+  panEl.addEventListener('input', (e)=>{
+    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10);
+  });
+
+  async function handlePanSubmit(){
+    const pan = panEl.value.trim();
+    const consent = document.getElementById('panConsent').checked;
+
+    if(!PAN_REGEX.test(pan)){ toast('Please enter a valid PAN.'); panEl.focus(); return; }
+    if(!consent){ toast('Please provide consent for PAN verification.'); return; }
+
+    loading(true, 'Verifying PAN…');
+    // Simulate API call for demo
+    setTimeout(() => {
+      loading(false);
+      toast('PAN verified successfully (Demo mode)');
+      gotoStep(5);
+    }, 1000);
+  }
+
+  function focusFirstOtp(){
+    const boxes = document.querySelectorAll('.otp-input');
+    boxes.forEach((b, idx)=>{
+      b.value = '';
+      b.addEventListener('input', (e)=>{
+        e.target.value = e.target.value.replace(/\D/g,'').slice(0,1);
+        if(e.target.value && boxes[idx+1]) boxes[idx+1].focus();
+      });
+      b.addEventListener('keydown', (e)=>{
+        if(e.key==='Backspace' && !b.value && boxes[idx-1]) boxes[idx-1].focus();
+      });
+    });
+    boxes[0].focus();
+  }
+
+  function getOtp(){
+    return Array.from(document.querySelectorAll('.otp-input')).map(i=>i.value).join('');
+  }
+
+  // resend timer
+  let timer;
+  function startResendTimer(s){
+    const resendBtn = document.getElementById('resendBtn');
+    clearInterval(timer);
+    let remaining = s; resendBtn.disabled = true; resendBtn.textContent = `Resend in ${remaining}s`;
+    timer = setInterval(()=>{
+      remaining--;
+      resendBtn.textContent = remaining>0 ? `Resend in ${remaining}s` : 'Resend OTP';
+      if(remaining<=0){ clearInterval(timer); resendBtn.disabled = false; }
+    }, 1000);
+  }
+
+  // Final submit
+  const form = document.getElementById('signupForm');
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const pin  = document.getElementById('pin').value.trim();
+    const pin2 = document.getElementById('pin2').value.trim();
+    const terms = document.getElementById('terms').checked;
+
+    if (pin.length !== 6 || pin !== pin2) { toast('Passcodes must match and be 6 digits.'); return; }
+    if (!terms) { toast('Please accept Terms & Privacy Policy.'); return; }
+
+    try {
+      loading(true, 'Creating your account…');
+      // Simulate API call for demo
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      loading(false);
+
+      // Show success state with account details
+      displayAccountDetails({
+        username: '',
+        account_number: '',
+        full_name: document.getElementById('fullName').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        created_at: new Date().toLocaleDateString()
+      });
+      document.querySelector('.glass').classList.add('hidden');
+      document.getElementById('successState').classList.remove('hidden');
+    } catch (e) {
+      loading(false);
+      toast('Network error. Try again.');
+    }
+  });
+
+  // Display account details function
+  function displayAccountDetails(details) {
+    document.getElementById('acc-username').textContent = details.username || '-';
+    document.getElementById('acc-number').textContent = details.account_number || '-';
+    document.getElementById('acc-name').textContent = details.full_name || '-';
+    document.getElementById('acc-email').textContent = details.email || '-';
+    document.getElementById('acc-phone').textContent = details.phone || '-';
+    document.getElementById('acc-created').textContent = details.created_at || '-';
+  }
+
+  // Toast + Loading UI
+  let toastEl; let spinnerEl;
+  function toast(msg){
+    if(!toastEl){
+      toastEl = document.createElement('div');
+      toastEl.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl bg-slate-900/90 border border-white/10 shadow-xl';
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = msg; toastEl.style.opacity = '1';
+    setTimeout(()=>{ if(toastEl) toastEl.style.opacity = '0'; }, 2400);
+  }
+  function loading(show, label='Loading…'){
+    if(show){
+      if(!spinnerEl){
+        spinnerEl = document.createElement('div');
+        spinnerEl.className = 'fixed inset-0 z-40 grid place-items-center bg-slate-950/60 backdrop-blur';
+        spinnerEl.innerHTML = `<div class="rounded-2xl border border-white/10 bg-slate-900/80 px-5 py-4 flex items-center gap-3"><svg class="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none"><circle class="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path d="M22 12a10 10 0 00-10-10" stroke="currentColor" stroke-width="4"/></svg><span>${label}</span></div>`;
+        document.body.appendChild(spinnerEl);
+      } else {
+        spinnerEl.querySelector('span').textContent = label; spinnerEl.style.display = 'grid';
+      }
+    } else {
+      if(spinnerEl) spinnerEl.style.display = 'none';
+    }
+  }
+</script>
+
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>lucide.createIcons();</script>
+
+</body>
+</html>
