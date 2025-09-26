@@ -319,7 +319,7 @@
           </ol>
         </div>
 
-        <form id="signupForm" class="mt-8 space-y-8">
+        <form id="signupForm" class="mt-8 space-y-8" novalidate>
           <!-- Step 1: Mobile Verification -->
           <div id="step-1" class="step step-enter">
             <div class="text-center mb-8">
@@ -340,7 +340,7 @@
                 <div>
                   <label for="phone" class="block text-sm font-semibold text-slate-200 mb-2">Mobile Number</label>
                   <div class="relative">
-                    <input id="phone" inputmode="numeric" maxlength="10" placeholder="" class="form-input w-full rounded-2xl border border-white/10 bg-slate-900/60 pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-teal-500/50" required />
+                    <input id="phone" inputmode="numeric" maxlength="10" placeholder="" class="form-input w-full rounded-2xl border border-white/10 bg-slate-900/60 pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-teal-500/50" />
                     <i data-lucide="phone" class="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400"></i>
                   </div>
                 </div>
@@ -385,108 +385,535 @@
           </div>
 
           <!-- Step 2: Personal Details -->
-          <div id="step-2" class="step hidden">
-            <h2 class="text-xl font-semibold">Personal Details</h2>
-            <p class="mt-1 text-sm text-slate-400">Please provide your personal information for KYC verification.</p>
-            <div class="mt-5 grid sm:grid-cols-2 gap-4">
-              <div>
-                <label for="fullName" class="block text-sm font-medium">Full Name</label>
-                <input id="fullName" name="fullName" placeholder="" class="mt-1 w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500" required />
+          <div id="step-2" class="step hidden step-enter">
+            <!-- Enhanced header with icon and description -->
+            <div class="text-center mb-8">
+              <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="user" class="h-8 w-8 text-slate-900"></i>
               </div>
-              <div>
-                <label for="email" class="block text-sm font-medium">Email</label>
-                <input id="email" name="email" type="email"
-                  placeholder=""
-                  class="mt-1 w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500"
-                  required />
+              <h2 class="text-3xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">Personal Details</h2>
+              <p class="mt-3 text-slate-400 max-w-md mx-auto leading-relaxed">Provide your personal information for KYC verification and account setup</p>
+            </div>
+            
+            <!-- Enhanced form with better styling and validation -->
+            <div class="space-y-6">
+              <!-- Full Name Field -->
+              <div class="space-y-2">
+                <label for="fullName" class="block text-sm font-semibold text-slate-200">Full Name</label>
+                <div class="relative">
+                  <input 
+                    id="fullName" 
+                    name="fullName" 
+                    type="text"
+                    placeholder="Enter your full name as per government ID" 
+                    class="form-input w-full rounded-2xl border border-white/10 bg-slate-900/60 pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-teal-500/50"
+                    minlength="2"
+                    maxlength="100" />
+                  <i data-lucide="user-check" class="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400"></i>
+                </div>
+                <p class="text-xs text-slate-500">Enter your full name exactly as it appears on your official documents</p>
               </div>
-              <div>
-                <label for="dob" class="block text-sm font-medium">Date of Birth</label>
-                <input id="dob" name="dob" type="date" class="mt-1 w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500" required />
+
+              <!-- Email Field -->
+              <div class="space-y-2">
+                <label for="email" class="block text-sm font-semibold text-slate-200">Email Address</label>
+                <div class="relative">
+                  <input 
+                    id="email" 
+                    name="email" 
+                    type="email"
+                    placeholder="your.email@example.com"
+                    class="form-input w-full rounded-2xl border border-white/10 bg-slate-900/60 pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-teal-500/50" />
+                  <i data-lucide="mail" class="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400"></i>
+                </div>
+                <p class="text-xs text-slate-500">We'll use this for account notifications and important updates</p>
               </div>
-              <div>
-                <label for="gender" class="block text-sm font-medium">Gender</label>
-                <select id="gender" name="gender" class="mt-1 w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500" required>
-                  <option value="">Select Gender</option>
-                  <option value="M">Male</option>
-                  <option value="F">Female</option>
-                  <option value="O">Other</option>
-                </select>
+
+              <!-- Date of Birth and Gender - Side by side on larger screens -->
+              <div class="grid sm:grid-cols-2 gap-6">
+                <!-- Date of Birth Field -->
+                <div class="space-y-2">
+                  <label for="dob" class="block text-sm font-semibold text-slate-200">Date of Birth</label>
+                  <div class="relative">
+                    <input 
+                      id="dob" 
+                      name="dob" 
+                      type="date" 
+                      class="form-input w-full rounded-2xl border border-white/10 bg-slate-900/60 pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-teal-500/50" />
+                    <i data-lucide="calendar" class="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400"></i>
+                  </div>
+                  <p class="text-xs text-slate-500">You must be at least 18 years old</p>
+                </div>
+
+                <!-- Gender Field -->
+                <div class="space-y-2">
+                  <label for="gender" class="block text-sm font-semibold text-slate-200">Gender</label>
+                  <div class="relative">
+                    <select 
+                      id="gender" 
+                      name="gender" 
+                      class="form-input w-full rounded-2xl border border-white/10 bg-slate-900/60 pl-12 pr-10 py-3 outline-none focus:ring-2 focus:ring-teal-500/50 appearance-none">
+                      <option value="">Select Gender</option>
+                      <option value="M">Male</option>
+                      <option value="F">Female</option>
+                      <option value="O">Other</option>
+                    </select>
+                    <i data-lucide="user-cog" class="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400"></i>
+                    <i data-lucide="chevron-down" class="absolute right-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none"></i>
+                  </div>
+                  <p class="text-xs text-slate-500">As per your government ID</p>
+                </div>
+              </div>
+
+              <!-- Privacy Notice -->
+              <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+                <div class="h-8 w-8 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                  <i data-lucide="shield-check" class="h-4 w-4 text-blue-400"></i>
+                </div>
+                <div>
+                  <p class="text-sm text-slate-300 font-medium">Your data is secure</p>
+                  <p class="text-xs text-slate-400 mt-1">All personal information is encrypted and stored securely for KYC compliance only.</p>
+                </div>
               </div>
             </div>
-            <div class="mt-6 flex justify-between">
-              <button type="button" onclick="gotoStep(1)" class="px-4 py-2 rounded-xl border border-white/10">Back</button>
-              <button type="button" onclick="handlePersonalSubmit()" class="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white">Continue</button>
+
+            <!-- Enhanced navigation buttons -->
+            <div class="mt-8 flex justify-between">
+              <button 
+                type="button" 
+                onclick="gotoStep(1)" 
+                class="px-6 py-3 rounded-2xl border border-slate-700/50 hover:border-slate-600/50 text-slate-300 hover:text-white transition-all duration-200 flex items-center gap-2">
+                <i data-lucide="arrow-left" class="h-4 w-4"></i>
+                Back
+              </button>
+              <button 
+                type="button" 
+                onclick="handlePersonalSubmit()" 
+                class="px-8 py-3 rounded-2xl bg-gradient-to-r from-teal-600 to-cyan-500 hover:from-teal-700 hover:to-cyan-600 text-white font-semibold shadow-lg shadow-teal-900/30 transition-all duration-200 flex items-center gap-2">
+                Save & Continue
+                <i data-lucide="arrow-right" class="h-4 w-4"></i>
+              </button>
             </div>
           </div>
 
-          <!-- Step 3: Aadhaar -->
-          <div id="step-3" class="step hidden">
-            <h2 class="text-xl font-semibold">Link your Aadhaar</h2>
-            <p class="mt-1 text-sm text-slate-400">We will send a consent request and mask your Aadhaar in records.</p>
-            <div class="mt-5 grid gap-4">
+          <!-- Step 3: Aadhaar Verification -->
+          <div id="step-3" class="step hidden step-enter">
+            <!-- Enhanced header with icon and description -->
+            <div class="text-center mb-8">
+              <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-400 flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="fingerprint" class="h-8 w-8 text-white"></i>
+              </div>
+              <h2 class="text-3xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">Aadhaar Verification</h2>
+              <p class="mt-3 text-slate-400 max-w-md mx-auto leading-relaxed">We'll verify your Aadhaar details with our secure database and send you an OTP for final confirmation</p>
+            </div>
+
+            <!-- Step 3A: Aadhaar Details Form -->
+            <div id="aadhaar-form" class="space-y-6">
+              <!-- Aadhaar Number Field -->
+              <div class="space-y-2">
+                <label for="aadhaarNumber" class="block text-sm font-semibold text-slate-200">Aadhaar Number</label>
+                <div class="relative">
+                  <input 
+                    id="aadhaarNumber" 
+                    name="aadhaarNumber" 
+                    inputmode="numeric" 
+                    maxlength="14" 
+                    placeholder="Enter your 12-digit Aadhaar number" 
+                    class="form-input w-full rounded-2xl border border-white/10 bg-slate-900/60 pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-orange-500/50 tracking-wider text-lg font-mono" />
+                  <i data-lucide="credit-card" class="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400"></i>
+                </div>
+                <p class="text-xs text-slate-500">Enter your 12-digit Aadhaar number (spaces will be added automatically)</p>
+              </div>
+
+              <!-- Current Address Field -->
+              <div class="space-y-2">
+                <label for="currentAddress" class="block text-sm font-semibold text-slate-200">Current Address</label>
+                <div class="relative">
+                  <textarea 
+                    id="currentAddress" 
+                    name="currentAddress" 
+                    placeholder="Enter your current residential address" 
+                    rows="3"
+                    class="form-input w-full rounded-2xl border border-white/10 bg-slate-900/60 pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-orange-500/50 resize-none"></textarea>
+                  <i data-lucide="home" class="absolute left-4 top-4 h-5 w-5 text-slate-400"></i>
+                </div>
+                <p class="text-xs text-slate-500">Provide your current address (may differ from Aadhaar address)</p>
+              </div>
+
+              <!-- Consent Checkbox -->
+              <div class="flex items-start gap-3 p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+                <input 
+                  id="aadhaarConsent" 
+                  name="aadhaarConsent"
+                  type="checkbox" 
+                  class="h-5 w-5 rounded border-white/20 bg-slate-900/60 text-orange-500 focus:ring-orange-500/50 focus:ring-2 mt-0.5" />
               <div>
-                <label for="aadhaar" class="block text-sm font-medium">Aadhaar Number</label>
-                <input id="aadhaar" name="aadhaar" inputmode="numeric" maxlength="14" placeholder="" class="mt-1 w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500 tracking-widest" required />
-                <p class="mt-2 text-xs text-slate-400">12 digits. We'll only store a masked token.</p>
+                  <label for="aadhaarConsent" class="text-sm text-slate-300 font-medium">I authorize Aadhaar verification</label>
+                  <p class="text-xs text-slate-400 mt-1">I consent to verify my Aadhaar details for KYC compliance. We follow UIDAI guidelines and will only store masked references.</p>
+                </div>
+              </div>
+
+              <!-- Information Cards -->
+              <div class="grid gap-4">
+                <div class="flex items-center gap-4 p-3 rounded-xl bg-orange-500/10 border border-orange-400/20">
+                  <div class="h-8 w-8 rounded-lg bg-orange-500/20 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="shield-check" class="h-4 w-4 text-orange-400"></i>
               </div>
               <div>
-                <label for="address" class="block text-sm font-medium">Current Address</label>
-                <input id="address" name="address" placeholder="" class="mt-1 w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500" required />
+                    <p class="text-sm text-orange-300 font-medium">Secure Verification</p>
+                    <p class="text-xs text-orange-200/80 mt-1">Your Aadhaar details are verified against our pre-approved database for enhanced security.</p>
               </div>
-              <div class="flex items-center gap-2">
-                <input id="aadhaarConsent" type="checkbox" class="h-4 w-4 rounded border-white/20 bg-slate-900/60" required />
-                <label for="aadhaarConsent" class="text-sm text-slate-300">I authorize e-KYC using Aadhaar through UIDAI-compliant flow.</label>
+              </div>
+                <div class="flex items-center gap-4 p-3 rounded-xl bg-red-500/10 border border-red-400/20">
+                  <div class="h-8 w-8 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="eye-off" class="h-4 w-4 text-red-400"></i>
+            </div>
+                  <div>
+                    <p class="text-sm text-red-300 font-medium">Privacy Protected</p>
+                    <p class="text-xs text-red-200/80 mt-1">We never store complete Aadhaar numbers. Only masked tokens are retained as per regulations.</p>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="mt-6 flex justify-between">
-              <button type="button" onclick="gotoStep(2)" class="px-4 py-2 rounded-xl border border-white/10">Back</button>
-              <button type="button" onclick="handleAadhaarSubmit()" class="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white">Continue</button>
+
+            <!-- Step 3B: OTP Verification (hidden initially) -->
+            <div id="aadhaar-otp-verification" class="hidden space-y-6">
+              <!-- Success message -->
+              <div class="p-4 rounded-xl bg-green-500/10 border border-green-400/20 mb-6">
+                <div class="flex items-center gap-3">
+                  <i data-lucide="check-circle" class="h-5 w-5 text-green-400"></i>
+                  <div>
+                    <p class="text-green-300 font-medium">Aadhaar Details Verified ✅</p>
+                    <p id="aadhaarVerificationMessage" class="text-green-200/80 text-sm mt-1">Your details match our records. Please enter the OTP sent for final verification.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Aadhaar info display -->
+              <div class="p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+                <div class="grid sm:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span class="text-slate-400">Aadhaar:</span>
+                    <span id="displayMaskedAadhaar" class="font-mono text-orange-300 ml-2">XXXX-XXXX-****</span>
+                  </div>
+                  <div>
+                    <span class="text-slate-400">Name on Aadhaar:</span>
+                    <span id="displayAadhaarName" class="text-slate-300 ml-2 font-medium">-</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- OTP Input -->
+              <div class="space-y-4">
+                <label class="block text-sm font-semibold text-slate-200">Enter Aadhaar Verification OTP</label>
+                <div class="aadhaar-otp grid grid-cols-6 gap-3" aria-label="Enter 6 digit Aadhaar OTP">
+                  <input class="aadhaar-otp-input text-center text-2xl h-14 rounded-2xl border-2 border-white/10 bg-slate-900/60 font-bold focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50" inputmode="numeric" maxlength="1" />
+                  <input class="aadhaar-otp-input text-center text-2xl h-14 rounded-2xl border-2 border-white/10 bg-slate-900/60 font-bold focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50" inputmode="numeric" maxlength="1" />
+                  <input class="aadhaar-otp-input text-center text-2xl h-14 rounded-2xl border-2 border-white/10 bg-slate-900/60 font-bold focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50" inputmode="numeric" maxlength="1" />
+                  <input class="aadhaar-otp-input text-center text-2xl h-14 rounded-2xl border-2 border-white/10 bg-slate-900/60 font-bold focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50" inputmode="numeric" maxlength="1" />
+                  <input class="aadhaar-otp-input text-center text-2xl h-14 rounded-2xl border-2 border-white/10 bg-slate-900/60 font-bold focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50" inputmode="numeric" maxlength="1" />
+                  <input class="aadhaar-otp-input text-center text-2xl h-14 rounded-2xl border-2 border-white/10 bg-slate-900/60 font-bold focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50" inputmode="numeric" maxlength="1" />
+                </div>
+              </div>
+
+              <!-- OTP Info -->
+              <div class="flex items-center justify-between p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+                <p id="aadhaarOtpInfo" class="text-slate-400 flex items-center gap-2">
+                  <i data-lucide="info" class="h-4 w-4"></i>
+                  Check console for OTP (demo mode)
+                </p>
+                <p class="text-slate-400 text-sm">Expires in 5 minutes</p>
+              </div>
+            </div>
+
+            <!-- Enhanced navigation buttons -->
+            <div class="mt-8 flex justify-between">
+              <button 
+                type="button" 
+                onclick="gotoStep(2)" 
+                class="px-6 py-3 rounded-2xl border border-slate-700/50 hover:border-slate-600/50 text-slate-300 hover:text-white transition-all duration-200 flex items-center gap-2">
+                <i data-lucide="arrow-left" class="h-4 w-4"></i>
+                Back
+              </button>
+              <div class="flex gap-3">
+                <button 
+                  type="button" 
+                  id="verifyAadhaarBtn"
+                  onclick="handleAadhaarSubmit()" 
+                  class="px-8 py-3 rounded-2xl bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white font-semibold shadow-lg shadow-orange-900/30 transition-all duration-200 flex items-center gap-2">
+                  Verify Aadhaar
+                  <i data-lucide="fingerprint" class="h-4 w-4"></i>
+                </button>
+                <button 
+                  type="button" 
+                  id="verifyAadhaarOtpBtn"
+                  onclick="handleAadhaarOtpSubmit()"
+                  class="hidden px-8 py-3 rounded-2xl bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white font-semibold shadow-lg shadow-orange-900/30 transition-all duration-200 flex items-center gap-2">
+                  Verify OTP
+                  <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                </button>
+              </div>
             </div>
           </div>
 
-          <!-- Step 4: PAN -->
-          <div id="step-4" class="step hidden">
-            <h2 class="text-xl font-semibold">Verify your PAN</h2>
-            <p class="mt-1 text-sm text-slate-400">We use PAN to perform basic KYC and check eligibility.</p>
-            <div class="mt-5 grid gap-4">
-              <div>
-                <label for="pan" class="block text-sm font-medium">PAN</label>
-                <input id="pan" name="pan" maxlength="10" autocomplete="off" placeholder="" class="mt-1 w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500 uppercase tracking-widest" required />
-                <p id="panHelp" class="mt-2 text-xs text-slate-400">Format: 5 letters, 4 digits, 1 letter</p>
+          <!-- Step 4: PAN Verification -->
+          <div id="step-4" class="step hidden step-enter">
+            <!-- Enhanced header with icon and description -->
+            <div class="text-center mb-8">
+              <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-400 flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="credit-card" class="h-8 w-8 text-white"></i>
               </div>
-              <div class="flex items-center gap-2">
-                <input id="panConsent" type="checkbox" class="h-4 w-4 rounded border-white/20 bg-slate-900/60" required />
-                <label for="panConsent" class="text-sm text-slate-300">I consent to verify my PAN with the issuer for KYC.</label>
+              <h2 class="text-3xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">PAN Verification</h2>
+              <p class="mt-3 text-slate-400 max-w-md mx-auto leading-relaxed">We'll verify your PAN details with our secure database and send you an OTP for final confirmation</p>
+            </div>
+
+            <!-- Step 4A: PAN Details Form -->
+            <div id="pan-form" class="space-y-6">
+              <!-- PAN Number Field -->
+              <div class="space-y-2">
+                <label for="pan" class="block text-sm font-semibold text-slate-200">PAN Number</label>
+                <div class="relative">
+                  <input 
+                    id="pan" 
+                    name="pan" 
+                    maxlength="10" 
+                    autocomplete="off" 
+                    placeholder="Enter your 10-character PAN number" 
+                    class="form-input w-full rounded-2xl border border-white/10 bg-slate-900/60 pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-purple-500/50 uppercase tracking-widest text-lg font-mono" />
+                  <i data-lucide="credit-card" class="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400"></i>
+                </div>
+                <p class="text-xs text-slate-500">Enter your 10-character PAN number (format: ABCDE1234F)</p>
+              </div>
+
+              <!-- Consent Checkbox -->
+              <div class="flex items-start gap-3 p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+                <input 
+                  id="panConsent" 
+                  name="panConsent"
+                  type="checkbox" 
+                  class="h-5 w-5 rounded border-white/20 bg-slate-900/60 text-purple-500 focus:ring-purple-500/50 focus:ring-2 mt-0.5" />
+                <div>
+                  <label for="panConsent" class="text-sm text-slate-300 font-medium">I authorize PAN verification</label>
+                  <p class="text-xs text-slate-400 mt-1">I consent to verify my PAN details for KYC compliance. We follow IT Department guidelines and will only store masked references.</p>
+                </div>
+              </div>
+
+              <!-- Information Cards -->
+              <div class="grid gap-4">
+                <div class="flex items-center gap-4 p-3 rounded-xl bg-purple-500/10 border border-purple-400/20">
+                  <div class="h-8 w-8 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="shield-check" class="h-4 w-4 text-purple-400"></i>
+                  </div>
+                  <div>
+                    <p class="text-sm text-purple-300 font-medium">Secure Verification</p>
+                    <p class="text-xs text-purple-200/80 mt-1">Your PAN details are verified against our pre-approved database for enhanced security.</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-4 p-3 rounded-xl bg-pink-500/10 border border-pink-400/20">
+                  <div class="h-8 w-8 rounded-lg bg-pink-500/20 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="eye-off" class="h-4 w-4 text-pink-400"></i>
+                  </div>
+                  <div>
+                    <p class="text-sm text-pink-300 font-medium">Privacy Protected</p>
+                    <p class="text-xs text-pink-200/80 mt-1">We never store complete PAN numbers. Only masked tokens are retained as per regulations.</p>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="mt-6 flex justify-between">
-              <button type="button" onclick="gotoStep(3)" class="px-4 py-2 rounded-xl border border-white/10">Back</button>
-              <button type="button" onclick="handlePanSubmit()" class="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white">Continue</button>
+
+            <!-- Step 4B: OTP Verification (hidden initially) -->
+            <div id="pan-otp-verification" class="hidden space-y-6">
+              <!-- Success message -->
+              <div class="p-4 rounded-xl bg-green-500/10 border border-green-400/20 mb-6">
+                <div class="flex items-center gap-3">
+                  <i data-lucide="check-circle" class="h-5 w-5 text-green-400"></i>
+                  <div>
+                    <p class="text-green-300 font-medium">PAN Details Verified ✅</p>
+                    <p id="panVerificationMessage" class="text-green-200/80 text-sm mt-1">Your details match our records. Please enter the OTP sent for final verification.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PAN info display -->
+              <div class="p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+                <div class="grid sm:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span class="text-slate-400">PAN:</span>
+                    <span id="displayMaskedPan" class="font-mono text-purple-300 ml-2">XXXXX****</span>
+                  </div>
+                  <div>
+                    <span class="text-slate-400">Name on PAN:</span>
+                    <span id="displayPanName" class="text-slate-300 ml-2 font-medium">-</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- OTP Input -->
+              <div class="space-y-4">
+                <label class="block text-sm font-semibold text-slate-200">Enter PAN Verification OTP</label>
+                <div class="pan-otp grid grid-cols-6 gap-3" aria-label="Enter 6 digit PAN OTP">
+                  <input class="pan-otp-input text-center text-2xl h-14 rounded-2xl border-2 border-white/10 bg-slate-900/60 font-bold focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50" inputmode="numeric" maxlength="1" />
+                  <input class="pan-otp-input text-center text-2xl h-14 rounded-2xl border-2 border-white/10 bg-slate-900/60 font-bold focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50" inputmode="numeric" maxlength="1" />
+                  <input class="pan-otp-input text-center text-2xl h-14 rounded-2xl border-2 border-white/10 bg-slate-900/60 font-bold focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50" inputmode="numeric" maxlength="1" />
+                  <input class="pan-otp-input text-center text-2xl h-14 rounded-2xl border-2 border-white/10 bg-slate-900/60 font-bold focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50" inputmode="numeric" maxlength="1" />
+                  <input class="pan-otp-input text-center text-2xl h-14 rounded-2xl border-2 border-white/10 bg-slate-900/60 font-bold focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50" inputmode="numeric" maxlength="1" />
+                  <input class="pan-otp-input text-center text-2xl h-14 rounded-2xl border-2 border-white/10 bg-slate-900/60 font-bold focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50" inputmode="numeric" maxlength="1" />
+                </div>
+              </div>
+
+              <!-- OTP Info -->
+              <div class="flex items-center justify-between p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+                <p id="panOtpInfo" class="text-slate-400 flex items-center gap-2">
+                  <i data-lucide="info" class="h-4 w-4"></i>
+                  Check console for OTP (demo mode)
+                </p>
+                <p class="text-slate-400 text-sm">Expires in 5 minutes</p>
+              </div>
+            </div>
+
+            <!-- Enhanced navigation buttons -->
+            <div class="mt-8 flex justify-between">
+              <button 
+                type="button" 
+                onclick="gotoStep(3)" 
+                class="px-6 py-3 rounded-2xl border border-slate-700/50 hover:border-slate-600/50 text-slate-300 hover:text-white transition-all duration-200 flex items-center gap-2">
+                <i data-lucide="arrow-left" class="h-4 w-4"></i>
+                Back
+              </button>
+              <div class="flex gap-3">
+                <button 
+                  type="button" 
+                  id="verifyPanBtn"
+                  onclick="handlePanSubmit()" 
+                  class="px-8 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold shadow-lg shadow-purple-900/30 transition-all duration-200 flex items-center gap-2">
+                  Verify PAN
+                  <i data-lucide="credit-card" class="h-4 w-4"></i>
+                </button>
+                <button 
+                  type="button" 
+                  id="verifyPanOtpBtn"
+                  onclick="handlePanOtpSubmit()"
+                  class="hidden px-8 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold shadow-lg shadow-purple-900/30 transition-all duration-200 flex items-center gap-2">
+                  Verify OTP
+                  <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                </button>
+              </div>
             </div>
           </div>
 
-          <!-- Step 5: Passcode -->
-          <div id="step-5" class="step hidden">
-            <h2 class="text-xl font-semibold">Set your 6-digit passcode</h2>
-            <p class="mt-1 text-sm text-slate-400">You'll use this to log in on this device.</p>
-            <div class="mt-5 grid gap-4 sm:grid-cols-2">
-              <div>
-                <label for="pin" class="block text-sm font-medium">Passcode</label>
-                <input id="pin" type="password" inputmode="numeric" maxlength="6" placeholder="••••••" class="mt-1 w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 focus:ring-2 focus:ring-teal-500" required />
+          <!-- Step 5: PIN Setup -->
+          <div id="step-5" class="step hidden step-enter">
+            <!-- Enhanced header with icon and description -->
+            <div class="text-center mb-8">
+              <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-400 flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="shield-check" class="h-8 w-8 text-white"></i>
               </div>
-              <div>
-                <label for="pin2" class="block text-sm font-medium">Confirm passcode</label>
-                <input id="pin2" type="password" inputmode="numeric" maxlength="6" placeholder="••••••" class="mt-1 w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 focus:ring-2 focus:ring-teal-500" required />
+              <h2 class="text-3xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">Set Your Secure PIN</h2>
+              <p class="mt-3 text-slate-400 max-w-md mx-auto leading-relaxed">Create a 6-digit PIN for secure access to your NeoBank account</p>
+            </div>
+            
+            <!-- Enhanced PIN setup form -->
+            <div class="space-y-6">
+              <!-- PIN Input Fields -->
+              <div class="grid sm:grid-cols-2 gap-6">
+                <!-- PIN Field -->
+                <div class="space-y-2">
+                  <label for="pin" class="block text-sm font-semibold text-slate-200">Create PIN</label>
+                  <div class="relative">
+                    <input 
+                      id="pin" 
+                      name="pin" 
+                      type="password" 
+                      inputmode="numeric" 
+                      maxlength="6" 
+                      placeholder="Enter 6-digit PIN" 
+                      class="form-input w-full rounded-2xl border border-white/10 bg-slate-900/60 pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-emerald-500/50 text-center text-2xl font-mono tracking-widest" />
+                    <i data-lucide="lock" class="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400"></i>
+                  </div>
+                  <p class="text-xs text-slate-500">Choose a secure 6-digit PIN</p>
+                </div>
+
+                <!-- Confirm PIN Field -->
+                <div class="space-y-2">
+                  <label for="pin2" class="block text-sm font-semibold text-slate-200">Confirm PIN</label>
+                  <div class="relative">
+                    <input 
+                      id="pin2" 
+                      name="pin2" 
+                      type="password" 
+                      inputmode="numeric" 
+                      maxlength="6" 
+                      placeholder="Confirm 6-digit PIN" 
+                      class="form-input w-full rounded-2xl border border-white/10 bg-slate-900/60 pl-12 pr-4 py-3 outline-none focus:ring-2 focus:ring-emerald-500/50 text-center text-2xl font-mono tracking-widest" />
+                    <i data-lucide="shield-check" class="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400"></i>
+                  </div>
+                  <p class="text-xs text-slate-500">Re-enter your PIN to confirm</p>
+                </div>
               </div>
-              <div class="sm:col-span-2 flex items-start gap-2">
-                <input id="terms" type="checkbox" class="mt-1 h-4 w-4 rounded border-white/20 bg-slate-900/60" required />
-                <label for="terms" class="text-sm text-slate-300">I agree to the <a class="underline decoration-dotted" href="#">Terms</a> and <a class="underline decoration-dotted" href="#">Privacy Policy</a>.</label>
+
+              <!-- PIN Strength Indicator -->
+              <div id="pinStrengthIndicator" class="hidden p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+                <div class="flex items-center gap-3">
+                  <i data-lucide="info" class="h-5 w-5 text-blue-400"></i>
+                  <div>
+                    <p class="text-sm text-slate-300 font-medium">PIN Strength</p>
+                    <p id="pinStrengthText" class="text-xs text-slate-400 mt-1">Enter your PIN to see strength</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Terms and Privacy Policy -->
+              <div class="flex items-start gap-3 p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+                <input 
+                  id="terms" 
+                  name="terms"
+                  type="checkbox" 
+                  class="h-5 w-5 rounded border-white/20 bg-slate-900/60 text-emerald-500 focus:ring-emerald-500/50 focus:ring-2 mt-0.5" />
+                <div>
+                  <label for="terms" class="text-sm text-slate-300 font-medium">I agree to the Terms and Privacy Policy</label>
+                  <p class="text-xs text-slate-400 mt-1">By creating an account, you agree to our Terms of Service and Privacy Policy. Your PIN is encrypted and stored securely.</p>
+                </div>
+              </div>
+
+              <!-- Security Information -->
+              <div class="grid gap-4">
+                <div class="flex items-center gap-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-400/20">
+                  <div class="h-8 w-8 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="shield-check" class="h-4 w-4 text-emerald-400"></i>
+                  </div>
+                  <div>
+                    <p class="text-sm text-emerald-300 font-medium">Bank-Grade Security</p>
+                    <p class="text-xs text-emerald-200/80 mt-1">Your PIN is encrypted using industry-standard hashing and never stored in plain text.</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-4 p-3 rounded-xl bg-blue-500/10 border border-blue-400/20">
+                  <div class="h-8 w-8 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="lock" class="h-4 w-4 text-blue-400"></i>
+                  </div>
+                  <div>
+                    <p class="text-sm text-blue-300 font-medium">Account Protection</p>
+                    <p class="text-xs text-blue-200/80 mt-1">Your account will be locked after 3 failed PIN attempts for 15 minutes.</p>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="mt-6 flex justify-between">
-              <button type="button" onclick="gotoStep(4)" class="px-4 py-2 rounded-xl border border-white/10">Back</button>
-              <button type="submit" class="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white">Create Account</button>
+
+            <!-- Enhanced navigation buttons -->
+            <div class="mt-8 flex justify-between">
+              <button 
+                type="button" 
+                onclick="gotoStep(4)" 
+                class="px-6 py-3 rounded-2xl border border-slate-700/50 hover:border-slate-600/50 text-slate-300 hover:text-white transition-all duration-200 flex items-center gap-2">
+                <i data-lucide="arrow-left" class="h-4 w-4"></i>
+                Back
+              </button>
+              <button 
+                type="button" 
+                onclick="handlePinSetup()" 
+                class="px-8 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-green-500 hover:from-emerald-700 hover:to-green-600 text-white font-semibold shadow-lg shadow-emerald-900/30 transition-all duration-200 flex items-center gap-2">
+                Create Account
+                <i data-lucide="shield-check" class="h-4 w-4"></i>
+              </button>
             </div>
           </div>
         </form>
@@ -811,82 +1238,536 @@
     }
   }
 
-  // Personal details submit
+  // Personal details submit - REAL BACKEND INTEGRATION
   async function handlePersonalSubmit(){
+    // Step 1: Get form values and validate client-side
     const name = document.getElementById('fullName').value.trim();
     const email = document.getElementById('email').value.trim();
     const dob = document.getElementById('dob').value;
     const gender = document.getElementById('gender').value;
 
+    // Client-side validation - basic checks before hitting the server
     if(!name || !email || !dob || !gender){ 
       toast('Please complete all personal details.'); 
       return; 
     }
 
-    try {
-      loading(true, 'Saving personal details…');
-      // Simulate API call for demo
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      loading(false);
+    // Check if we have a session ID from the OTP verification step
+    if(!signupSessionId) {
+      toast('Session expired. Please restart the signup process.');
+      return;
+    }
 
-      toast('Personal details saved successfully (Demo mode)');
-      gotoStep(3);
+    try {
+      // Step 2: Show loading state
+      loading(true, 'Saving personal details…');
+      
+      // Step 3: 🎯 REAL API CALL: Save personal details to backend
+      const response = await fetch('/users/api/save-personal-details/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...CSRF()  // Include CSRF token for security
+        },
+        body: JSON.stringify({
+          session_id: signupSessionId,  // From previous OTP verification
+          full_name: name,
+          email: email,
+          date_of_birth: dob,   // Format: YYYY-MM-DD from HTML date input
+          gender: gender        // 'M', 'F', or 'O'
+        })
+      });
+      
+      // Step 4: Parse the response from backend
+      const data = await response.json();
+      loading(false);
+      
+      // Step 5: Handle the response
+      if (data.success) {
+        // 🎉 Personal details saved successfully!
+        toast('✅ Personal details saved successfully!');
+        
+        // Log success for debugging
+        console.log('Personal details saved:', {
+          session_id: signupSessionId,
+          next_step: data.next_step
+        });
+        
+        // Move to next step (Aadhaar verification)
+        setTimeout(() => {
+          gotoStep(data.next_step || 3);
+        }, 800);
+        
+      } else {
+        // Handle validation errors or other failures
+        toast(data.message || 'Failed to save personal details');
+        
+        // Log error for debugging
+        console.error('Personal details save failed:', data.message);
+      }
+      
     } catch(e){
+      // Handle network errors or other exceptions
       loading(false); 
-      toast('Network error. Try again.');
+      console.error('Personal details save error:', e);
+      toast('Network error. Please check your connection and try again.');
     }
   }
 
-  // Aadhaar formatting & submit
-  const aadhaarEl = document.getElementById('aadhaar');
-  aadhaarEl.addEventListener('input', (e)=>{
+  // Aadhaar formatting & submit - REAL BACKEND INTEGRATION
+  const aadhaarNumberEl = document.getElementById('aadhaarNumber');
+  if (aadhaarNumberEl) {
+    aadhaarNumberEl.addEventListener('input', (e) => {
     let v = onlyDigits(e.target.value).slice(0,12);
     v = v.replace(/(\d{4})(?=\d)/g, '$1 ');
     e.target.value = v;
   });
+  }
 
   async function handleAadhaarSubmit(){
-    const aadhaar = onlyDigits(document.getElementById('aadhaar').value);
-    const address = document.getElementById('address').value.trim();
+    // Step 1: Get form values
+    const aadhaar = onlyDigits(document.getElementById('aadhaarNumber').value);
+    const address = document.getElementById('currentAddress').value.trim();
     const consent = document.getElementById('aadhaarConsent').checked;
 
-    if(aadhaar.length!==12){ toast('Enter a 12-digit Aadhaar number.'); return; }
-    if(!address || !consent){ toast('Please provide address and consent.'); return; }
+    // Step 2: Validate client-side
+    if(aadhaar.length !== 12){ 
+      toast('Please enter a valid 12-digit Aadhaar number.'); 
+      document.getElementById('aadhaarNumber').focus();
+      return; 
+    }
+    if(!address){ 
+      toast('Please provide your current address.'); 
+      document.getElementById('currentAddress').focus();
+      return; 
+    }
+    if(!consent){ 
+      toast('Please provide consent for Aadhaar verification.'); 
+      return; 
+    }
+
+    // Check if we have a session ID
+    if(!signupSessionId) {
+      toast('Session expired. Please restart the signup process.');
+      return;
+    }
 
     try {
-      loading(true, 'Linking Aadhaar…');
-      // Simulate API call for demo
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      loading(true, 'Verifying Aadhaar details…');
+      
+      // Step 3: 🎯 REAL API CALL: Verify Aadhaar with backend
+      const response = await fetch('/users/api/verify-aadhaar/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...CSRF()
+        },
+        body: JSON.stringify({
+          session_id: signupSessionId,
+          aadhaar_number: aadhaar,
+          address: address
+        })
+      });
+      
+      const data = await response.json();
       loading(false);
 
-      toast('Aadhaar linked successfully (Demo mode)');
-      gotoStep(4);
-    } catch (e) {
+      if (data.success) {
+        // Step 4: 🎉 Aadhaar details verified successfully!
+        toast('✅ Aadhaar details verified! Check console for OTP.');
+        
+        // Update UI to show Aadhaar is verified and OTP sent
+        document.getElementById('displayMaskedAadhaar').textContent = data.masked_aadhaar || 'XXXX-XXXX-****';
+        document.getElementById('displayAadhaarName').textContent = data.name_on_aadhaar || '-';
+        document.getElementById('aadhaarVerificationMessage').textContent = data.message;
+        
+        // Hide Aadhaar form, show OTP verification
+        document.getElementById('aadhaar-form').classList.add('hidden');
+        document.getElementById('aadhaar-otp-verification').classList.remove('hidden');
+        
+        // Hide initial verify button, show OTP verify button
+        document.getElementById('verifyAadhaarBtn').classList.add('hidden');
+        document.getElementById('verifyAadhaarOtpBtn').classList.remove('hidden');
+        
+        // Setup OTP input handling
+        setupAadhaarOtpInputs();
+        
+        // Focus first OTP input
+        const firstOtpInput = document.querySelector('.aadhaar-otp-input');
+        if (firstOtpInput) {
+          setTimeout(() => firstOtpInput.focus(), 100);
+        }
+        
+        // Update info message
+        document.getElementById('aadhaarOtpInfo').innerHTML = 
+          '<i data-lucide="info" class="h-4 w-4"></i> OTP sent! Check console for the code (demo mode)';
+        
+        // Recreate icons after DOM update
+        lucide.createIcons();
+        
+      } else {
+        // Handle different error cases
+        toast(data.message || 'Aadhaar verification failed');
+        
+        // Log error for debugging
+        console.error('Aadhaar verification failed:', data.message);
+      }
+      
+    } catch(e){
       loading(false);
-      toast('Network error. Try again.');
+      console.error('Aadhaar verification error:', e);
+      toast('Network error. Please check your connection and try again.');
     }
   }
 
-  // PAN formatting & submit
+  // Setup OTP inputs for Aadhaar verification
+  function setupAadhaarOtpInputs(){
+    const boxes = document.querySelectorAll('.aadhaar-otp-input');
+    boxes.forEach((b, idx) => {
+      b.value = '';
+      b.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/\D/g,'').slice(0,1);
+        if(e.target.value && boxes[idx+1]) boxes[idx+1].focus();
+      });
+      b.addEventListener('keydown', (e) => {
+        if(e.key==='Backspace' && !b.value && boxes[idx-1]) boxes[idx-1].focus();
+      });
+    });
+  }
+
+  // Get Aadhaar OTP from inputs
+  function getAadhaarOtp(){
+    return Array.from(document.querySelectorAll('.aadhaar-otp-input')).map(i=>i.value).join('');
+  }
+
+  // Handle Aadhaar OTP submission
+  async function handleAadhaarOtpSubmit(){
+    const otp = getAadhaarOtp();
+    
+    if(otp.length !== 6){ 
+      toast('Please enter the complete 6-digit OTP.'); 
+      return; 
+    }
+    
+    if(!signupSessionId) {
+      toast('Session expired. Please restart the signup process.');
+      return;
+    }
+
+    try {
+      loading(true, 'Verifying Aadhaar OTP…');
+      
+      // 🎯 REAL API CALL: Verify Aadhaar OTP with backend
+      const response = await fetch('/users/api/verify-aadhaar-otp/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...CSRF()
+        },
+        body: JSON.stringify({
+          session_id: signupSessionId,
+          otp_code: otp
+        })
+      });
+      
+      const data = await response.json();
+      loading(false);
+      
+      if (data.success) {
+        // 🎉 Aadhaar OTP verified successfully!
+        toast('✅ Aadhaar verification completed successfully! 🎉');
+        
+        // Update OTP inputs to show success
+        const otpInputs = document.querySelectorAll('.aadhaar-otp-input');
+        otpInputs.forEach(input => {
+          input.style.borderColor = '#10b981'; // green border
+          input.disabled = true;
+        });
+        
+        // Update info message
+        document.getElementById('aadhaarOtpInfo').innerHTML = 
+          '<i data-lucide="check-circle" class="h-4 w-4 text-green-400"></i> Aadhaar verification completed successfully!';
+        
+        // Recreate icons after DOM update
+        lucide.createIcons();
+        
+        // Log success for debugging
+        console.log('Aadhaar verification completed:', {
+          session_id: signupSessionId,
+          masked_aadhaar: data.masked_aadhaar,
+          next_step: data.next_step
+        });
+        
+        // Move to next step after a short delay
+        setTimeout(() => {
+          gotoStep(data.next_step || 4);
+        }, 1500);
+        
+      } else {
+        // Handle different error cases
+        if (data.should_restart) {
+          toast(data.message + ' Reloading Aadhaar verification...');
+          // Reset the form
+          setTimeout(() => {
+            document.getElementById('aadhaar-form').classList.remove('hidden');
+            document.getElementById('aadhaar-otp-verification').classList.add('hidden');
+            document.getElementById('verifyAadhaarBtn').classList.remove('hidden');
+            document.getElementById('verifyAadhaarOtpBtn').classList.add('hidden');
+          }, 2000);
+        } else {
+          toast(data.message);
+          if (data.attempts_left !== undefined) {
+            toast(`Attempts remaining: ${data.attempts_left}`);
+          }
+        }
+        
+        // Clear the OTP inputs for retry
+        clearAadhaarOtpInputs();
+      }
+      
+    } catch(e){
+      loading(false); 
+      console.error('Aadhaar OTP verification error:', e);
+      toast('Network error. Please check your connection and try again.');
+    }
+  }
+
+  // Helper function to clear Aadhaar OTP inputs
+  function clearAadhaarOtpInputs() {
+    const otpInputs = document.querySelectorAll('.aadhaar-otp-input');
+    otpInputs.forEach(input => {
+      input.value = '';
+      input.style.borderColor = ''; // Reset border color
+      input.disabled = false;
+    });
+    // Focus on first input
+    if (otpInputs.length > 0) {
+      otpInputs[0].focus();
+    }
+  }
+
+  // PAN formatting & submit - REAL BACKEND INTEGRATION
   const panEl = document.getElementById('pan');
-  panEl.addEventListener('input', (e)=>{
-    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10);
-  });
+  if (panEl) {
+    panEl.addEventListener('input', (e)=>{
+      e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10);
+    });
+  }
 
   async function handlePanSubmit(){
+    // Step 1: Get form values
     const pan = panEl.value.trim();
     const consent = document.getElementById('panConsent').checked;
 
-    if(!PAN_REGEX.test(pan)){ toast('Please enter a valid PAN.'); panEl.focus(); return; }
-    if(!consent){ toast('Please provide consent for PAN verification.'); return; }
+    // Step 2: Validate client-side
+    if(!PAN_REGEX.test(pan)){ 
+      toast('Please enter a valid PAN number (format: ABCDE1234F).'); 
+      panEl.focus(); 
+      return; 
+    }
+    if(!consent){ 
+      toast('Please provide consent for PAN verification.'); 
+      return; 
+    }
 
-    loading(true, 'Verifying PAN…');
-    // Simulate API call for demo
-    setTimeout(() => {
+    // Check if we have a session ID
+    if(!signupSessionId) {
+      toast('Session expired. Please restart the signup process.');
+      return;
+    }
+
+    try {
+      loading(true, 'Verifying PAN details…');
+      
+      // Step 3: 🎯 REAL API CALL: Verify PAN with backend
+      const response = await fetch('/users/api/verify-pan/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...CSRF()
+        },
+        body: JSON.stringify({
+          session_id: signupSessionId,
+          pan_number: pan,
+          consent: consent
+        })
+      });
+      
+      const data = await response.json();
       loading(false);
-      toast('PAN verified successfully (Demo mode)');
-      gotoStep(5);
-    }, 1000);
+
+      if (data.success) {
+        // Step 4: 🎉 PAN details verified successfully!
+        toast('✅ PAN details verified! Check console for OTP.');
+        
+        // Update UI to show PAN is verified and OTP sent
+        document.getElementById('displayMaskedPan').textContent = data.masked_pan || 'XXXXX****';
+        document.getElementById('displayPanName').textContent = data.name_on_pan || '-';
+        document.getElementById('panVerificationMessage').textContent = data.message;
+        
+        // Hide PAN form, show OTP verification
+        document.getElementById('pan-form').classList.add('hidden');
+        document.getElementById('pan-otp-verification').classList.remove('hidden');
+        
+        // Hide initial verify button, show OTP verify button
+        document.getElementById('verifyPanBtn').classList.add('hidden');
+        document.getElementById('verifyPanOtpBtn').classList.remove('hidden');
+        
+        // Setup OTP input handling
+        setupPanOtpInputs();
+        
+        // Focus first OTP input
+        const firstOtpInput = document.querySelector('.pan-otp-input');
+        if (firstOtpInput) {
+          setTimeout(() => firstOtpInput.focus(), 100);
+        }
+        
+        // Update info message
+        document.getElementById('panOtpInfo').innerHTML = 
+          '<i data-lucide="info" class="h-4 w-4"></i> OTP sent! Check console for the code (demo mode)';
+        
+        // Recreate icons after DOM update
+        lucide.createIcons();
+        
+      } else {
+        // Handle different error cases
+        toast(data.message || 'PAN verification failed');
+        
+        // Log error for debugging
+        console.error('PAN verification failed:', data.message);
+      }
+      
+    } catch(e){
+      loading(false);
+      console.error('PAN verification error:', e);
+      toast('Network error. Please check your connection and try again.');
+    }
+  }
+
+  // Setup OTP inputs for PAN verification
+  function setupPanOtpInputs(){
+    const boxes = document.querySelectorAll('.pan-otp-input');
+    boxes.forEach((b, idx) => {
+      b.value = '';
+      b.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/\D/g,'').slice(0,1);
+        if(e.target.value && boxes[idx+1]) boxes[idx+1].focus();
+      });
+      b.addEventListener('keydown', (e) => {
+        if(e.key==='Backspace' && !b.value && boxes[idx-1]) boxes[idx-1].focus();
+      });
+    });
+  }
+
+  // Get PAN OTP from inputs
+  function getPanOtp(){
+    return Array.from(document.querySelectorAll('.pan-otp-input')).map(i=>i.value).join('');
+  }
+
+  // Handle PAN OTP submission
+  async function handlePanOtpSubmit(){
+    const otp = getPanOtp();
+    
+    if(otp.length !== 6){ 
+      toast('Please enter the complete 6-digit OTP.'); 
+      return; 
+    }
+    
+    if(!signupSessionId) {
+      toast('Session expired. Please restart the signup process.');
+      return;
+    }
+
+    try {
+      loading(true, 'Verifying PAN OTP…');
+      
+      // 🎯 REAL API CALL: Verify PAN OTP with backend
+      const response = await fetch('/users/api/verify-pan-otp/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...CSRF()
+        },
+        body: JSON.stringify({
+          session_id: signupSessionId,
+          otp_code: otp
+        })
+      });
+      
+      const data = await response.json();
+      loading(false);
+      
+      if (data.success) {
+        // 🎉 PAN OTP verified successfully!
+        toast('✅ PAN verification completed successfully! 🎉');
+        
+        // Update OTP inputs to show success
+        const otpInputs = document.querySelectorAll('.pan-otp-input');
+        otpInputs.forEach(input => {
+          input.style.borderColor = '#10b981'; // green border
+          input.disabled = true;
+        });
+        
+        // Update info message
+        document.getElementById('panOtpInfo').innerHTML = 
+          '<i data-lucide="check-circle" class="h-4 w-4 text-green-400"></i> PAN verification completed successfully!';
+        
+        // Recreate icons after DOM update
+        lucide.createIcons();
+        
+        // Log success for debugging
+        console.log('PAN verification completed:', {
+          session_id: signupSessionId,
+          masked_pan: data.masked_pan,
+          next_step: data.next_step
+        });
+        
+        // Move to next step after a short delay
+        setTimeout(() => {
+          gotoStep(data.next_step || 5);
+        }, 1500);
+        
+      } else {
+        // Handle different error cases
+        if (data.should_restart) {
+          toast(data.message + ' Reloading PAN verification...');
+          // Reset the form
+          setTimeout(() => {
+            document.getElementById('pan-form').classList.remove('hidden');
+            document.getElementById('pan-otp-verification').classList.add('hidden');
+            document.getElementById('verifyPanBtn').classList.remove('hidden');
+            document.getElementById('verifyPanOtpBtn').classList.add('hidden');
+          }, 2000);
+        } else {
+          toast(data.message);
+          if (data.attempts_left !== undefined) {
+            toast(`Attempts remaining: ${data.attempts_left}`);
+          }
+        }
+        
+        // Clear the OTP inputs for retry
+        clearPanOtpInputs();
+      }
+      
+    } catch(e){
+      loading(false); 
+      console.error('PAN OTP verification error:', e);
+      toast('Network error. Please check your connection and try again.');
+    }
+  }
+
+  // Helper function to clear PAN OTP inputs
+  function clearPanOtpInputs() {
+    const otpInputs = document.querySelectorAll('.pan-otp-input');
+    otpInputs.forEach(input => {
+      input.value = '';
+      input.style.borderColor = ''; // Reset border color
+      input.disabled = false;
+    });
+    // Focus on first input
+    if (otpInputs.length > 0) {
+      otpInputs[0].focus();
+    }
   }
 
   function focusFirstOtp(){
@@ -921,38 +1802,200 @@
     }, 1000);
   }
 
-  // Final submit
-  const form = document.getElementById('signupForm');
-  form.addEventListener('submit', async (e)=>{
-    e.preventDefault();
-    const pin  = document.getElementById('pin').value.trim();
+  // PIN Setup Handler - REAL BACKEND INTEGRATION
+  async function handlePinSetup(){
+    // Step 1: Get form values
+    const pin = document.getElementById('pin').value.trim();
     const pin2 = document.getElementById('pin2').value.trim();
     const terms = document.getElementById('terms').checked;
 
-    if (pin.length !== 6 || pin !== pin2) { toast('Passcodes must match and be 6 digits.'); return; }
-    if (!terms) { toast('Please accept Terms & Privacy Policy.'); return; }
+    // Step 2: Client-side validation
+    if (!pin) {
+      toast('Please enter your PIN');
+      document.getElementById('pin').focus();
+      return;
+    }
+
+    if (!pin2) {
+      toast('Please confirm your PIN');
+      document.getElementById('pin2').focus();
+      return;
+    }
+
+    if (pin.length !== 6 || !pin.match(/^\d{6}$/)) {
+      toast('PIN must be exactly 6 digits');
+      document.getElementById('pin').focus();
+      return;
+    }
+
+    if (pin !== pin2) {
+      toast('PINs do not match. Please try again.');
+      document.getElementById('pin2').focus();
+      return;
+    }
+
+    if (!terms) {
+      toast('Please accept the Terms and Privacy Policy');
+      return;
+    }
+
+    // Check if we have a session ID
+    if (!signupSessionId) {
+      toast('Session expired. Please restart the signup process.');
+      return;
+    }
 
     try {
+      // Step 3: Show loading state
       loading(true, 'Creating your account…');
-      // Simulate API call for demo
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      loading(false);
-
-      // Show success state with account details
-      displayAccountDetails({
-        username: '',
-        account_number: '',
-        full_name: document.getElementById('fullName').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        created_at: new Date().toLocaleDateString()
+      
+      // Step 4: 🎯 REAL API CALL: Setup PIN and create account
+      const response = await fetch('/users/api/setup-pin/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...CSRF()  // Include CSRF token for security
+        },
+        body: JSON.stringify({
+          session_id: signupSessionId,
+          pin: pin,
+          confirm_pin: pin2,
+          terms_accepted: terms
+        })
       });
-      document.querySelector('.glass').classList.add('hidden');
-      document.getElementById('successState').classList.remove('hidden');
-    } catch (e) {
+      
+      // Step 5: Parse the response from backend
+      const data = await response.json();
       loading(false);
-      toast('Network error. Try again.');
+      
+      // Step 6: Handle the response
+      if (data.success) {
+        // 🎉 Account created successfully!
+        toast('✅ Account created successfully! Welcome to NeoBank! 🎉');
+        
+        // Log success for debugging
+        console.log('Account created successfully:', data.account_details);
+        
+        // Show success state with real account details
+        displayAccountDetails(data.account_details);
+        document.querySelector('.glass').classList.add('hidden');
+        document.getElementById('successState').classList.remove('hidden');
+        
+        // Recreate icons after DOM update
+        lucide.createIcons();
+        
+      } else {
+        // Handle validation errors or other failures
+        toast(data.message || 'Failed to create account');
+        
+        // Log error for debugging
+        console.error('Account creation failed:', data.message);
+      }
+      
+    } catch(e){
+      // Handle network errors or other exceptions
+      loading(false); 
+      console.error('PIN setup error:', e);
+      toast('Network error. Please check your connection and try again.');
     }
+  }
+
+  // PIN Strength Checker
+  function checkPinStrength(pin) {
+    if (!pin || pin.length !== 6) return null;
+    
+    let strength = 0;
+    let feedback = [];
+    
+    // Check for common patterns
+    if (pin === '123456' || pin === '000000' || pin === '111111') {
+      return { level: 'weak', message: 'Avoid common patterns like 123456' };
+    }
+    
+    // Check for sequential numbers
+    if (pin === '123456' || pin === '654321') {
+      return { level: 'weak', message: 'Avoid sequential numbers' };
+    }
+    
+    // Check for repeated digits
+    if (/^(\d)\1{5}$/.test(pin)) {
+      return { level: 'weak', message: 'Avoid using the same digit repeatedly' };
+    }
+    
+    // Check for variety of digits
+    const uniqueDigits = new Set(pin).size;
+    if (uniqueDigits >= 4) {
+      strength += 2;
+      feedback.push('Good variety of digits');
+    } else if (uniqueDigits >= 3) {
+      strength += 1;
+      feedback.push('Some variety in digits');
+    }
+    
+    // Check for no obvious patterns
+    if (!/123|321|000|111|222|333|444|555|666|777|888|999/.test(pin)) {
+      strength += 1;
+      feedback.push('No obvious patterns');
+    }
+    
+    if (strength >= 3) {
+      return { level: 'strong', message: 'Strong PIN - good choice!' };
+    } else if (strength >= 2) {
+      return { level: 'medium', message: 'Medium strength PIN' };
+    } else {
+      return { level: 'weak', message: 'Consider a more complex PIN' };
+    }
+  }
+
+  // Setup PIN input event listeners
+  document.addEventListener('DOMContentLoaded', function() {
+    const pinInput = document.getElementById('pin');
+    const pin2Input = document.getElementById('pin2');
+    const strengthIndicator = document.getElementById('pinStrengthIndicator');
+    const strengthText = document.getElementById('pinStrengthText');
+    
+    if (pinInput) {
+      pinInput.addEventListener('input', function(e) {
+        const pin = e.target.value;
+        
+        if (pin.length === 6) {
+          const strength = checkPinStrength(pin);
+          if (strength) {
+            strengthIndicator.classList.remove('hidden');
+            strengthText.textContent = strength.message;
+            
+            // Update colors based on strength
+            strengthIndicator.className = strengthIndicator.className.replace(/bg-\w+-\d+\/10|border-\w+-\d+\/20/g, '');
+            if (strength.level === 'strong') {
+              strengthIndicator.classList.add('bg-green-500/10', 'border-green-400/20');
+            } else if (strength.level === 'medium') {
+              strengthIndicator.classList.add('bg-yellow-500/10', 'border-yellow-400/20');
+            } else {
+              strengthIndicator.classList.add('bg-red-500/10', 'border-red-400/20');
+            }
+          }
+        } else {
+          strengthIndicator.classList.add('hidden');
+        }
+      });
+    }
+    
+    // Auto-focus next field when PIN is complete
+    if (pinInput && pin2Input) {
+      pinInput.addEventListener('input', function(e) {
+        if (e.target.value.length === 6) {
+          pin2Input.focus();
+        }
+      });
+    }
+  });
+
+  // Final submit (legacy - now handled by handlePinSetup)
+  const form = document.getElementById('signupForm');
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    // Redirect to PIN setup handler
+    handlePinSetup();
   });
 
   // Display account details function

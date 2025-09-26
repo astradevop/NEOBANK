@@ -43,10 +43,112 @@ class CustomUser(AbstractUser):
     # Simple KYC fields (store masked values only for privacy)
     pan_masked = models.CharField(max_length=20, null=True, blank=True)
     aadhaar_masked = models.CharField(max_length=20, null=True, blank=True)
+    
+    # PIN/Passcode fields for secure login
+    pin_hash = models.CharField(
+        max_length=128, 
+        null=True, 
+        blank=True,
+        help_text="Hashed 6-digit PIN for secure login (never store plain PIN)"
+    )
+    pin_set_at = models.DateTimeField(
+        null=True, 
+        blank=True,
+        help_text="When the PIN was last set or updated"
+    )
+    pin_attempts = models.IntegerField(
+        default=0,
+        help_text="Number of failed PIN attempts (for security)"
+    )
+    pin_locked_until = models.DateTimeField(
+        null=True, 
+        blank=True,
+        help_text="PIN locked until this time (if too many failed attempts)"
+    )
 
     # A convenience method to show masked PAN (example: XXXXT1234)
     def get_pan_masked(self):
         return self.pan_masked or ""
+
+    def set_pin(self, pin):
+        """
+        Set a new 6-digit PIN for the user.
+        - pin: 6-digit string like '123456'
+        - Automatically hashes the PIN for secure storage
+        - Updates pin_set_at timestamp
+        - Resets failed attempt counters
+        """
+        import hashlib
+        from django.utils import timezone
+        
+        # Validate PIN format
+        if not pin or len(pin) != 6 or not pin.isdigit():
+            raise ValueError("PIN must be exactly 6 digits")
+        
+        # Hash the PIN using SHA-256 (in production, use bcrypt or similar)
+        pin_hash = hashlib.sha256(pin.encode()).hexdigest()
+        
+        # Update user fields
+        self.pin_hash = pin_hash
+        self.pin_set_at = timezone.now()
+        self.pin_attempts = 0
+        self.pin_locked_until = None
+        self.save(update_fields=['pin_hash', 'pin_set_at', 'pin_attempts', 'pin_locked_until'])
+    
+    def verify_pin(self, pin):
+        """
+        Verify a PIN against the stored hash.
+        - pin: 6-digit string to verify
+        - Returns (True, None) on success
+        - Returns (False, reason) on failure: 'locked', 'wrong', 'no_pin'
+        """
+        from django.utils import timezone
+        import hashlib
+        
+        # Check if PIN is locked
+        if self.pin_locked_until and timezone.now() < self.pin_locked_until:
+            return False, 'locked'
+        
+        # Check if PIN is set
+        if not self.pin_hash:
+            return False, 'no_pin'
+        
+        # Validate PIN format
+        if not pin or len(pin) != 6 or not pin.isdigit():
+            return False, 'invalid_format'
+        
+        # Hash the provided PIN and compare
+        pin_hash = hashlib.sha256(pin.encode()).hexdigest()
+        
+        if pin_hash == self.pin_hash:
+            # Success - reset failed attempts
+            self.pin_attempts = 0
+            self.pin_locked_until = None
+            self.save(update_fields=['pin_attempts', 'pin_locked_until'])
+            return True, None
+        else:
+            # Failed attempt - increment counter
+            self.pin_attempts += 1
+            
+            # Lock PIN after 3 failed attempts for 15 minutes
+            if self.pin_attempts >= 3:
+                self.pin_locked_until = timezone.now() + timezone.timedelta(minutes=15)
+            
+            self.save(update_fields=['pin_attempts', 'pin_locked_until'])
+            return False, 'wrong'
+    
+    def is_pin_locked(self):
+        """Check if PIN is currently locked due to failed attempts."""
+        from django.utils import timezone
+        return self.pin_locked_until and timezone.now() < self.pin_locked_until
+    
+    def get_pin_lock_time_remaining(self):
+        """Get remaining lock time in minutes (0 if not locked)."""
+        from django.utils import timezone
+        if not self.is_pin_locked():
+            return 0
+        remaining = self.pin_locked_until - timezone.now()
+        return max(0, int(remaining.total_seconds() / 60))
 
     def __str__(self):
         # Useful string in admin and shell
@@ -197,3 +299,184 @@ def mask_aadhaar(aadhaar: str) -> str:
     if len(digits) <= 4:
         return digits
     return 'X' * (len(digits) - 4) + digits[-4:]
+
+
+# -----------------------
+# 6) AadhaarRecord - Admin managed Aadhaar data
+# -----------------------
+class AadhaarRecord(models.Model):
+    """
+    Admin-managed Aadhaar records that are pre-approved for verification.
+    
+    Why this exists:
+    - In a real system, you'd integrate with UIDAI (Unique Identification Authority of India)
+    - For this demo, admin can pre-populate approved Aadhaar numbers
+    - Only these numbers will pass verification
+    - Stores minimal required data for KYC compliance
+    
+    Security Notes:
+    - Never store full Aadhaar numbers in production
+    - This is a simplified demo model
+    - In production, use encrypted storage and hashed references
+    """
+    
+    # Store only last 4 digits + a hash reference for lookup
+    aadhaar_last_4 = models.CharField(
+        max_length=4, 
+        db_index=True,
+        help_text="Last 4 digits of Aadhaar for display purposes"
+    )
+    
+    # Hash of full Aadhaar for verification (in production, use proper hashing)
+    aadhaar_hash = models.CharField(
+        max_length=64, 
+        unique=True,
+        help_text="Hash of full Aadhaar number for verification"
+    )
+    
+    # Basic details that would come from UIDAI verification
+    full_name = models.CharField(
+        max_length=100,
+        help_text="Name as per Aadhaar"
+    )
+    
+    date_of_birth = models.DateField(
+        help_text="DOB as per Aadhaar (YYYY-MM-DD)"
+    )
+    
+    gender = models.CharField(
+        max_length=1,
+        choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Other')],
+        help_text="Gender as per Aadhaar"
+    )
+    
+    # Address information (simplified)
+    address_line = models.TextField(
+        help_text="Address as per Aadhaar"
+    )
+    
+    pin_code = models.CharField(
+        max_length=6,
+        help_text="PIN code as per Aadhaar"
+    )
+    
+    # Admin metadata
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Set to False to disable this Aadhaar record"
+    )
+    
+    created_by = models.CharField(
+        max_length=50,
+        default='admin',
+        help_text="Admin user who created this record"
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Aadhaar Record"
+        verbose_name_plural = "Aadhaar Records"
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.full_name} (****{self.aadhaar_last_4})"
+    
+    def get_masked_aadhaar(self):
+        """Return masked Aadhaar for display"""
+        return f"XXXX-XXXX-{self.aadhaar_last_4}"
+    
+    @staticmethod
+    def generate_hash(aadhaar_number):
+        """Generate hash for Aadhaar number (simplified for demo)"""
+        import hashlib
+        return hashlib.sha256(aadhaar_number.encode()).hexdigest()
+
+
+# -----------------------
+# 7) PANRecord - Admin managed PAN data
+# -----------------------
+class PANRecord(models.Model):
+    """
+    Admin-managed PAN records that are pre-approved for verification.
+    
+    Similar to AadhaarRecord, this allows admin to pre-populate valid PAN numbers
+    that will pass KYC verification. In production, you'd integrate with
+    Income Tax Department APIs or authorized PAN verification services.
+    """
+    
+    # Store last 4 characters for display (format: ABCDE1234F -> 1234F)
+    pan_last_4 = models.CharField(
+        max_length=5, 
+        db_index=True,
+        help_text="Last 4 characters of PAN for display"
+    )
+    
+    # Hash of full PAN for verification
+    pan_hash = models.CharField(
+        max_length=64, 
+        unique=True,
+        help_text="Hash of full PAN for verification"
+    )
+    
+    # PAN holder details
+    full_name = models.CharField(
+        max_length=100,
+        help_text="Name as per PAN"
+    )
+    
+    date_of_birth = models.DateField(
+        help_text="DOB as per PAN (YYYY-MM-DD)"
+    )
+    
+    father_name = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Father's name as per PAN"
+    )
+    
+    # PAN status
+    pan_status = models.CharField(
+        max_length=20,
+        choices=[
+            ('active', 'Active'),
+            ('inactive', 'Inactive'),
+            ('cancelled', 'Cancelled'),
+        ],
+        default='active',
+        help_text="PAN status as per IT Department"
+    )
+    
+    # Admin metadata
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Set to False to disable this PAN record"
+    )
+    
+    created_by = models.CharField(
+        max_length=50,
+        default='admin',
+        help_text="Admin user who created this record"
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "PAN Record"
+        verbose_name_plural = "PAN Records"
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.full_name} (***{self.pan_last_4})"
+    
+    def get_masked_pan(self):
+        """Return masked PAN for display"""
+        return f"XXXXX{self.pan_last_4}"
+    
+    @staticmethod
+    def generate_hash(pan_number):
+        """Generate hash for PAN number (simplified for demo)"""
+        import hashlib
+        return hashlib.sha256(pan_number.upper().encode()).hexdigest()
