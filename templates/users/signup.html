@@ -151,7 +151,7 @@
 <!-- Enhanced Header -->
 <header class="sticky top-0 z-30 border-b border-white/10 bg-slate-950/90 backdrop-blur-xl shadow-xl">
   <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
-    <a href="index.html" class="flex items-center gap-3 group">
+    <a href="{% url 'core:index' %}" class="flex items-center gap-3 group">
       <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-400 text-slate-900 font-black text-xl group-hover:scale-110 transition-transform duration-300">N</span>
       <span class="text-2xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">NeoBank</span>
     </a>
@@ -166,7 +166,7 @@
           <span>Bank-grade security</span>
         </div>
       </div>
-      <a href="login.html" class="px-4 py-2 rounded-xl border border-slate-700/50 hover:border-teal-500/50 text-slate-300 hover:text-white transition-colors duration-200">
+      <a href="{% url 'users:login' %}" class="px-4 py-2 rounded-xl border border-slate-700/50 hover:border-teal-500/50 text-slate-300 hover:text-white transition-colors duration-200">
         Login
       </a>
     </div>
@@ -373,7 +373,7 @@
               </div>
             </div>
             <div class="mt-8 flex justify-between">
-              <a href="index.html" class="px-6 py-3 rounded-2xl border border-slate-700/50 hover:border-slate-600/50 text-slate-300 hover:text-white transition-all duration-200 flex items-center gap-2">
+              <a href="{% url 'core:index' %}" class="px-6 py-3 rounded-2xl border border-slate-700/50 hover:border-slate-600/50 text-slate-300 hover:text-white transition-all duration-200 flex items-center gap-2">
                 <i data-lucide="arrow-left" class="h-4 w-4"></i>
                 Cancel
               </a>
@@ -481,7 +481,7 @@
             <div class="mt-8 flex justify-between">
               <button 
                 type="button" 
-                onclick="gotoStep(1)" 
+                onclick="goBackStep()" 
                 class="px-6 py-3 rounded-2xl border border-slate-700/50 hover:border-slate-600/50 text-slate-300 hover:text-white transition-all duration-200 flex items-center gap-2">
                 <i data-lucide="arrow-left" class="h-4 w-4"></i>
                 Back
@@ -630,7 +630,7 @@
             <div class="mt-8 flex justify-between">
               <button 
                 type="button" 
-                onclick="gotoStep(2)" 
+                onclick="goBackStep()" 
                 class="px-6 py-3 rounded-2xl border border-slate-700/50 hover:border-slate-600/50 text-slate-300 hover:text-white transition-all duration-200 flex items-center gap-2">
                 <i data-lucide="arrow-left" class="h-4 w-4"></i>
                 Back
@@ -775,7 +775,7 @@
             <div class="mt-8 flex justify-between">
               <button 
                 type="button" 
-                onclick="gotoStep(3)" 
+                onclick="goBackStep()" 
                 class="px-6 py-3 rounded-2xl border border-slate-700/50 hover:border-slate-600/50 text-slate-300 hover:text-white transition-all duration-200 flex items-center gap-2">
                 <i data-lucide="arrow-left" class="h-4 w-4"></i>
                 Back
@@ -902,7 +902,7 @@
             <div class="mt-8 flex justify-between">
               <button 
                 type="button" 
-                onclick="gotoStep(4)" 
+                onclick="goBackStep()" 
                 class="px-6 py-3 rounded-2xl border border-slate-700/50 hover:border-slate-600/50 text-slate-300 hover:text-white transition-all duration-200 flex items-center gap-2">
                 <i data-lucide="arrow-left" class="h-4 w-4"></i>
                 Back
@@ -978,7 +978,7 @@
           </div>
 
           <div class="text-center">
-            <a href="dashboard.html" class="inline-flex px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-medium">Access Dashboard</a>
+            <a href="{% url 'users:login' %}" class="inline-flex px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-medium">Access Dashboard</a>
           </div>
         </div>
       </div>
@@ -1023,7 +1023,16 @@
   /** Available signup steps */
   const steps = [1,2,3,4,5];
 
-  function gotoStep(n){
+  function gotoStep(n, addToHistory = true){
+    // Update navigation history
+    if (addToHistory && n !== currentStep) {
+      navigationHistory.push(n);
+      // Update browser URL without page reload
+      const newUrl = window.location.pathname + `?step=${n}`;
+      window.history.pushState({step: n}, '', newUrl);
+    }
+    currentStep = n;
+    
     steps.forEach(i=>{
       const stepEl = document.getElementById(`step-${i}`);
       if(stepEl) {
@@ -1031,10 +1040,10 @@
         stepEl.classList.remove('step-enter');
       }
     });
-    const currentStep = document.getElementById(`step-${n}`);
-    if(currentStep) {
-      currentStep.classList.remove('hidden');
-      currentStep.classList.add('step-enter');
+    const currentStepEl = document.getElementById(`step-${n}`);
+    if(currentStepEl) {
+      currentStepEl.classList.remove('hidden');
+      currentStepEl.classList.add('step-enter');
     }
 
     // Update progress indicators
@@ -1083,9 +1092,28 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
   }
+  
+  // Function to go back to previous step
+  function goBackStep() {
+    if (navigationHistory.length > 1) {
+      navigationHistory.pop(); // Remove current step
+      const previousStep = navigationHistory[navigationHistory.length - 1];
+      gotoStep(previousStep, false); // Don't add to history again
+      // Update browser URL
+      const newUrl = window.location.pathname + `?step=${previousStep}`;
+      window.history.replaceState({step: previousStep}, '', newUrl);
+    } else {
+      // If no history, go to landing page
+      window.location.href = "{% url 'core:index' %}";
+    }
+  }
 
   // Global variable to store session ID for OTP verification
   let signupSessionId = null;
+  
+  // Navigation history for proper back button handling
+  let navigationHistory = [1]; // Start with step 1
+  let currentStep = 1;
 
   // Mobile OTP handling - REAL BACKEND INTEGRATION
   async function sendOtp(isResend=false){
@@ -1947,8 +1975,41 @@
     }
   }
 
+  // Handle browser back button
+  window.addEventListener('popstate', function(event) {
+    if (navigationHistory.length > 1) {
+      goBackStep();
+    } else {
+      // If at first step, go to landing page
+      window.location.href = "{% url 'core:index' %}";
+    }
+  });
+
+  // Initialize page state from URL parameters
+  function initializePageState() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const stepParam = urlParams.get('step');
+    
+    if (stepParam && !isNaN(stepParam)) {
+      const step = parseInt(stepParam);
+      if (step >= 1 && step <= 5) {
+        // Initialize navigation history with the correct step
+        navigationHistory = [step];
+        currentStep = step;
+        gotoStep(step, false);
+        return;
+      }
+    }
+    
+    // Default to step 1
+    gotoStep(1, false);
+  }
+
   // Setup PIN input event listeners
   document.addEventListener('DOMContentLoaded', function() {
+    // Initialize page state first
+    initializePageState();
+    
     const pinInput = document.getElementById('pin');
     const pin2Input = document.getElementById('pin2');
     const strengthIndicator = document.getElementById('pinStrengthIndicator');
