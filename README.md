@@ -85,7 +85,7 @@ Create a `.env` file in the project root:
 SECRET_KEY=your-secret-key-here
 DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
-DATABASE_URL=postgresql://user:password@localhost:5432/neobank
+DATABASE_URL=YOUR SUPABASE OR DATABSE URI(POSTGRE SQL RECOMMENDED)
 ```
 
 5. **Database setup**
