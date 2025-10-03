@@ -1,0 +1,777 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard — NeoBank</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Global Styles -->
+  <style>
+    html { 
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+    }
+    .glass { 
+      backdrop-filter: blur(20px); 
+      background: rgba(255,255,255,0.08); 
+      border: 1px solid rgba(255,255,255,0.15); 
+      box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    }
+    .card-hover { 
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+    }
+    .card-hover:hover { 
+      transform: translateY(-8px) scale(1.02); 
+      box-shadow: 0 30px 60px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.1); 
+    }
+    .hide-scrollbar { 
+      scrollbar-width: none; 
+    }
+    .hide-scrollbar::-webkit-scrollbar { 
+      display: none; 
+    }
+    
+    /* Enhanced dashboard animations */
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideInLeft {
+      0% { opacity: 0; transform: translateX(-20px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+    
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(20, 184, 166, 0.3); }
+      50% { box-shadow: 0 0 30px rgba(20, 184, 166, 0.6); }
+    }
+    
+    @keyframes countUp {
+      0% { transform: translateY(10px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    
+    .dashboard-bg {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%);
+      position: relative;
+    }
+    
+    .dashboard-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: 
+        radial-gradient(circle at 10% 20%, rgba(20, 184, 166, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(34, 211, 238, 0.08) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    
+    .sidebar-enhanced {
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .nav-item {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .nav-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s;
+    }
+    
+    .nav-item:hover::before {
+      left: 100%;
+    }
+    
+    .stat-card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(20, 184, 166, 0.6), transparent);
+      transform: translateX(-100%);
+      animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
+    .metric-animate {
+      animation: fadeInUp 0.8s ease-out;
+    }
+    
+    .metric-animate:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    
+    .metric-animate:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    
+    .metric-animate:nth-child(4) {
+      animation-delay: 0.6s;
+    }
+    
+    .balance-glow {
+      animation: glow 3s ease-in-out infinite;
+    }
+    
+    .number-counter {
+      animation: countUp 1s ease-out;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 dashboard-bg">
+  <div class="flex h-screen">
+    <!-- Enhanced Sidebar -->
+    <aside id="sidebar" class="w-64 sidebar-enhanced flex flex-col shadow-2xl">
+      <!-- Logo -->
+      <div class="p-6 border-b border-slate-800/50">
+        <a href="index.html" class="flex items-center gap-3">
+          <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-400 text-slate-900 font-black">N</span>
+          <span class="text-xl font-bold">NeoBank</span>
+        </a>
+      </div>
+
+      <!-- Enhanced Navigation -->
+      <nav class="flex-1 p-4 space-y-3">
+        <a href="dashboard.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl bg-gradient-to-r from-teal-600/30 to-cyan-500/20 text-teal-300 border border-teal-600/40 shadow-lg shadow-teal-900/20">
+          <i data-lucide="home" class="h-5 w-5"></i>
+          <span class="font-medium">Overview</span>
+        </a>
+        <a href="payments.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-300 hover:bg-slate-800/50 hover:text-white hover:shadow-lg transition-all duration-300">
+          <i data-lucide="credit-card" class="h-5 w-5"></i>
+          <span class="font-medium">Payments</span>
+        </a>
+        <a href="cards.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-300 hover:bg-slate-800/50 hover:text-white hover:shadow-lg transition-all duration-300">
+          <i data-lucide="wallet" class="h-5 w-5"></i>
+          <span class="font-medium">Cards</span>
+        </a>
+        <a href="goals.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-300 hover:bg-slate-800/50 hover:text-white hover:shadow-lg transition-all duration-300">
+          <i data-lucide="target" class="h-5 w-5"></i>
+          <span class="font-medium">Goals</span>
+        </a>
+        <a href="investments.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-300 hover:bg-slate-800/50 hover:text-white hover:shadow-lg transition-all duration-300">
+          <i data-lucide="trending-up" class="h-5 w-5"></i>
+          <span class="font-medium">Investments</span>
+        </a>
+        <a href="loans.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-300 hover:bg-slate-800/50 hover:text-white hover:shadow-lg transition-all duration-300">
+          <i data-lucide="banknote" class="h-5 w-5"></i>
+          <span class="font-medium">Loans</span>
+        </a>
+        <a href="autopay.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-300 hover:bg-slate-800/50 hover:text-white hover:shadow-lg transition-all duration-300">
+          <i data-lucide="repeat" class="h-5 w-5"></i>
+          <span class="font-medium">Autopay</span>
+        </a>
+        <a href="insights.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-300 hover:bg-slate-800/50 hover:text-white hover:shadow-lg transition-all duration-300">
+          <i data-lucide="bar-chart-2" class="h-5 w-5"></i>
+          <span class="font-medium">Insights</span>
+        </a>
+        <a href="financial_health.html" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-300 hover:bg-slate-800/50 hover:text-white hover:shadow-lg transition-all duration-300">
+          <i data-lucide="heart" class="h-5 w-5"></i>
+          <span class="font-medium">Financial Health</span>
+        </a>
+      </nav>
+
+      <!-- User Profile -->
+      <div class="p-4 border-t border-slate-800/50">
+        <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/30">
+          <div class="h-10 w-10 rounded-full bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center text-slate-900 font-semibold">
+            JD
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-slate-200 truncate">John Doe</p>
+            <p class="text-xs text-slate-400 truncate">john@example.com</p>
+          </div>
+          <button class="p-1 rounded-lg hover:bg-slate-700/50 text-slate-400 hover:text-slate-300">
+            <i data-lucide="more-vertical" class="h-4 w-4"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Top Bar -->
+      <header class="bg-slate-900/30 border-b border-slate-800/50 px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <button id="sidebarToggle" class="p-2 rounded-lg hover:bg-slate-800/50 text-slate-400 hover:text-slate-300 lg:hidden">
+              <i data-lucide="menu" class="h-5 w-5"></i>
+            </button>
+            <h1 class="text-2xl font-bold">Overview</h1>
+          </div>
+          
+          <div class="flex items-center gap-4">
+            <!-- Search -->
+            <div class="relative hidden md:block">
+              <input 
+                type="text" 
+                placeholder="Search transactions, cards..." 
+                class="w-64 px-4 py-2 pl-10 rounded-xl bg-slate-800/50 border border-slate-700/50 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              >
+              <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400"></i>
+            </div>
+            
+            <!-- Notifications -->
+            <button class="p-2 rounded-lg hover:bg-slate-800/50 text-slate-400 hover:text-slate-300 relative">
+              <i data-lucide="bell" class="h-5 w-5"></i>
+              <span class="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-xs text-white flex items-center justify-center">3</span>
+            </button>
+            
+            <!-- User Menu -->
+            <div class="flex items-center gap-3">
+              <div class="h-8 w-8 rounded-full bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center text-slate-900 font-semibold text-sm">
+                JD
+              </div>
+              <span class="hidden md:block text-sm font-medium text-slate-200">John Doe</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main class="flex-1 overflow-y-auto p-6">
+        <!-- Page Title -->
+        <div class="mb-6">
+          <h2 class="text-3xl font-bold">Welcome back, John!</h2>
+          <p class="text-slate-400 mt-1">Here's what's happening with your money today.</p>
+        </div>
+
+        <!-- Enhanced KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div class="metric-animate stat-card card-hover rounded-3xl p-8 shadow-xl">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex-1">
+                <p class="text-sm font-medium text-slate-400 mb-2">Total Balance</p>
+                <p id="totalBalance" class="text-3xl font-bold number-counter bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">₹ 1,24,580.45</p>
+              </div>
+              <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center shadow-lg balance-glow">
+                <i data-lucide="wallet" class="h-8 w-8 text-slate-900"></i>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center text-sm bg-emerald-500/10 px-3 py-2 rounded-xl border border-emerald-400/20">
+                <i data-lucide="trending-up" class="h-4 w-4 text-emerald-400 mr-2"></i>
+                <span class="text-emerald-400 font-semibold">+12.5%</span>
+              </div>
+              <span class="text-slate-500 text-sm">vs last month</span>
+            </div>
+          </div>
+
+          <div class="metric-animate stat-card card-hover rounded-3xl p-8 shadow-xl">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex-1">
+                <p class="text-sm font-medium text-slate-400 mb-2">Monthly Spending</p>
+                <p id="monthlySpending" class="text-3xl font-bold number-counter bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">₹ 24,310</p>
+              </div>
+              <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-400 flex items-center justify-center shadow-lg">
+                <i data-lucide="credit-card" class="h-8 w-8 text-white"></i>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center text-sm bg-emerald-500/10 px-3 py-2 rounded-xl border border-emerald-400/20">
+                <i data-lucide="trending-down" class="h-4 w-4 text-emerald-400 mr-2"></i>
+                <span class="text-emerald-400 font-semibold">-8.2%</span>
+              </div>
+              <span class="text-slate-500 text-sm">vs last month</span>
+            </div>
+          </div>
+
+          <div class="metric-animate stat-card card-hover rounded-3xl p-8 shadow-xl">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex-1">
+                <p class="text-sm font-medium text-slate-400 mb-2">Savings Rate</p>
+                <p id="savingsRate" class="text-3xl font-bold number-counter bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">18.5%</p>
+              </div>
+              <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg">
+                <i data-lucide="piggy-bank" class="h-8 w-8 text-white"></i>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center text-sm bg-emerald-500/10 px-3 py-2 rounded-xl border border-emerald-400/20">
+                <i data-lucide="trending-up" class="h-4 w-4 text-emerald-400 mr-2"></i>
+                <span class="text-emerald-400 font-semibold">+2.1%</span>
+              </div>
+              <span class="text-slate-500 text-sm">vs last month</span>
+            </div>
+          </div>
+
+          <div class="metric-animate stat-card card-hover rounded-3xl p-8 shadow-xl">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex-1">
+                <p class="text-sm font-medium text-slate-400 mb-2">Credit Score</p>
+                <p id="creditScore" class="text-3xl font-bold number-counter bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">782</p>
+              </div>
+              <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-400 flex items-center justify-center shadow-lg">
+                <i data-lucide="award" class="h-8 w-8 text-white"></i>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center text-sm bg-emerald-500/10 px-3 py-2 rounded-xl border border-emerald-400/20">
+                <i data-lucide="trending-up" class="h-4 w-4 text-emerald-400 mr-2"></i>
+                <span class="text-emerald-400 font-semibold">+15</span>
+              </div>
+              <span class="text-slate-500 text-sm">vs last month</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold mb-4">Quick Actions</h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button onclick="openModal('addMoneyModal')" class="card-hover rounded-xl border border-white/10 bg-white/5 p-4 text-center hover:bg-white/10 transition-colors">
+              <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center mx-auto mb-2">
+                <i data-lucide="plus" class="h-5 w-5 text-white"></i>
+              </div>
+              <p class="text-sm font-medium">Add Money</p>
+            </button>
+            <button onclick="openModal('sendMoneyModal')" class="card-hover rounded-xl border border-white/10 bg-white/5 p-4 text-center hover:bg-white/10 transition-colors">
+              <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center mx-auto mb-2">
+                <i data-lucide="send" class="h-5 w-5 text-white"></i>
+              </div>
+              <p class="text-sm font-medium">Send Money</p>
+            </button>
+            <button onclick="openModal('scanPayModal')" class="card-hover rounded-xl border border-white/10 bg-white/5 p-4 text-center hover:bg-white/10 transition-colors">
+              <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-400 flex items-center justify-center mx-auto mb-2">
+                <i data-lucide="qr-code" class="h-5 w-5 text-white"></i>
+              </div>
+              <p class="text-sm font-medium">Scan & Pay</p>
+            </button>
+            <button onclick="openModal('requestMoneyModal')" class="card-hover rounded-xl border border-white/10 bg-white/5 p-4 text-center hover:bg-white/10 transition-colors">
+              <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-orange-500 to-red-400 flex items-center justify-center mx-auto mb-2">
+                <i data-lucide="hand" class="h-5 w-5 text-white"></i>
+              </div>
+              <p class="text-sm font-medium">Request Money</p>
+            </button>
+          </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid lg:grid-cols-3 gap-6">
+          <!-- Left Column -->
+          <div class="lg:col-span-2 space-y-6">
+            <!-- Account Summary -->
+            <div class="card-hover rounded-2xl border border-white/10 bg-white/5 p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Account Summary</h3>
+                <button class="text-sm text-teal-400 hover:text-teal-300">View All</button>
+              </div>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800/30">
+                  <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center">
+                      <i data-lucide="wallet" class="h-5 w-5 text-slate-900"></i>
+                    </div>
+                    <div>
+                      <p class="font-medium">Main Account</p>
+                      <p class="text-sm text-slate-400">•••• 1234</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-semibold">₹ 1,24,580.45</p>
+                    <p class="text-sm text-emerald-400">+₹ 2,340 this month</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800/30">
+                  <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center">
+                      <i data-lucide="piggy-bank" class="h-5 w-5 text-white"></i>
+                    </div>
+                    <div>
+                      <p class="font-medium">Savings Pot</p>
+                      <p class="text-sm text-slate-400">Emergency Fund</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-semibold">₹ 45,230.00</p>
+                    <p class="text-sm text-emerald-400">+₹ 1,200 this month</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="card-hover rounded-2xl border border-white/10 bg-white/5 p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Recent Transactions</h3>
+                <button class="text-sm text-teal-400 hover:text-teal-300">View All</button>
+              </div>
+              <div id="recentTransactions" class="space-y-3">
+                <!-- Transactions will be loaded here -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="space-y-6">
+            <!-- Credit Card Preview -->
+            <div class="card-hover rounded-2xl border border-white/10 bg-white/5 p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">NeoCard</h3>
+                <span class="px-2 py-1 text-xs rounded-md bg-emerald-500/15 text-emerald-300 flex items-center gap-1">
+                  <i data-lucide="check-circle" class="h-4 w-4"></i> Active
+                </span>
+              </div>
+              <div class="space-y-4">
+                <div class="p-4 rounded-xl bg-gradient-to-br from-slate-800 to-slate-700 border border-slate-600/50">
+                  <div class="flex items-center justify-between mb-3">
+                    <p class="text-sm text-slate-300">Available Credit</p>
+                    <i data-lucide="credit-card" class="h-5 w-5 text-slate-400"></i>
+                  </div>
+                  <p class="text-2xl font-bold">₹ 1,25,690</p>
+                  <p class="text-sm text-slate-400 mt-1">of ₹ 1,50,000 limit</p>
+                </div>
+                <div class="grid grid-cols-2 gap-3 text-sm">
+                  <div class="p-3 rounded-lg bg-slate-800/50">
+                    <p class="text-slate-400">Current Bill</p>
+                    <p class="font-semibold">₹ 24,310</p>
+                  </div>
+                  <div class="p-3 rounded-lg bg-slate-800/50">
+                    <p class="text-slate-400">Due Date</p>
+                    <p class="font-semibold">28 Aug</p>
+                  </div>
+                </div>
+                <button class="w-full py-2 px-4 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-medium">
+                  Pay Bill
+                </button>
+              </div>
+            </div>
+
+            <!-- Financial Health Score -->
+            <div class="card-hover rounded-2xl border border-white/10 bg-white/5 p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Financial Health</h3>
+                <a href="financial_health.html" class="text-sm text-teal-400 hover:text-teal-300">View Details</a>
+              </div>
+              <div class="text-center">
+                <div class="relative w-24 h-24 mx-auto mb-4">
+                  <svg class="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="8" fill="none" class="text-slate-700"></circle>
+                    <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="8" fill="none" stroke-dasharray="251.2" stroke-dashoffset="50.24" class="text-emerald-400"></circle>
+                  </svg>
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-2xl font-bold">80</span>
+                  </div>
+                </div>
+                <p class="text-sm text-slate-400">Great job! Keep it up.</p>
+              </div>
+            </div>
+
+            <!-- Active Goals -->
+            <div class="card-hover rounded-2xl border border-white/10 bg-white/5 p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Active Goals</h3>
+                <a href="goals.html" class="text-sm text-teal-400 hover:text-teal-300">View All</a>
+              </div>
+              <div id="activeGoals" class="space-y-3">
+                <!-- Goals will be loaded here -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <!-- Add Money Modal -->
+  <div id="addMoneyModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 rounded-2xl border border-slate-700 p-6 w-full max-w-md">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold">Add Money</h3>
+        <button onclick="closeModal('addMoneyModal')" class="p-1 rounded-lg hover:bg-slate-800 text-slate-400">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+      <form onsubmit="addMoney(event)">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-200 mb-2">Amount</label>
+            <input type="number" step="0.01" min="1" required class="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Enter amount">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-200 mb-2">Source</label>
+            <select class="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500">
+              <option>Bank Transfer</option>
+              <option>UPI</option>
+              <option>Card</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-6">
+          <button type="button" onclick="closeModal('addMoneyModal')" class="flex-1 py-3 px-4 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800">Cancel</button>
+          <button type="submit" class="flex-1 py-3 px-4 rounded-xl bg-teal-600 hover:bg-teal-500 text-white">Add Money</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Send Money Modal -->
+  <div id="sendMoneyModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 rounded-2xl border border-slate-700 p-6 w-full max-w-md">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold">Send Money</h3>
+        <button onclick="closeModal('sendMoneyModal')" class="p-1 rounded-lg hover:bg-slate-800 text-slate-400">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+      <form onsubmit="sendMoney(event)">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-200 mb-2">Recipient</label>
+            <input type="text" required class="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Enter UPI ID or phone">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-200 mb-2">Amount</label>
+            <input type="number" step="0.01" min="1" required class="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Enter amount">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-200 mb-2">Note (Optional)</label>
+            <input type="text" class="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Add a note">
+          </div>
+        </div>
+        <div class="flex gap-3 mt-6">
+          <button type="button" onclick="closeModal('sendMoneyModal')" class="flex-1 py-3 px-4 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800">Cancel</button>
+          <button type="submit" class="flex-1 py-3 px-4 rounded-xl bg-teal-600 hover:bg-teal-500 text-white">Send Money</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scan & Pay Modal -->
+  <div id="scanPayModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 rounded-2xl border border-slate-700 p-6 w-full max-w-md">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold">Scan & Pay</h3>
+        <button onclick="closeModal('scanPayModal')" class="p-1 rounded-lg hover:bg-slate-800 text-slate-400">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+      <div class="text-center">
+        <div class="w-48 h-48 mx-auto mb-4 rounded-2xl bg-slate-800/50 border-2 border-dashed border-slate-600 flex items-center justify-center">
+          <div class="text-center">
+            <i data-lucide="camera" class="h-12 w-12 text-slate-400 mx-auto mb-2"></i>
+            <p class="text-sm text-slate-400">Point camera at QR code</p>
+          </div>
+        </div>
+        <p class="text-sm text-slate-400">Scan any UPI QR code to make instant payments</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Request Money Modal -->
+  <div id="requestMoneyModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 rounded-2xl border border-slate-700 p-6 w-full max-w-md">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold">Request Money</h3>
+        <button onclick="closeModal('requestMoneyModal')" class="p-1 rounded-lg hover:bg-slate-800 text-slate-400">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+      <form onsubmit="requestMoney(event)">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-200 mb-2">From</label>
+            <input type="text" required class="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Enter UPI ID or phone">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-200 mb-2">Amount</label>
+            <input type="number" step="0.01" min="1" required class="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Enter amount">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-200 mb-2">Note (Optional)</label>
+            <input type="text" class="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Add a note">
+          </div>
+        </div>
+        <div class="flex gap-3 mt-6">
+          <button type="button" onclick="closeModal('requestMoneyModal')" class="flex-1 py-3 px-4 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800">Cancel</button>
+          <button type="submit" class="flex-1 py-3 px-4 rounded-xl bg-teal-600 hover:bg-teal-500 text-white">Send Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Sidebar toggle for mobile
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    
+    if (sidebarToggle && sidebar) {
+      sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('-translate-x-full');
+      });
+    }
+
+    // Modal functions
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.add('hidden');
+    }
+
+    // Close modal on backdrop click
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('backdrop-blur-sm')) {
+        e.target.classList.add('hidden');
+      }
+    });
+
+    // Form submissions
+    function addMoney(event) {
+      event.preventDefault();
+      showToast('Money added successfully!', 'success');
+      closeModal('addMoneyModal');
+      // Update balance
+      updateBalance();
+    }
+
+    function sendMoney(event) {
+      event.preventDefault();
+      showToast('Money sent successfully!', 'success');
+      closeModal('sendMoneyModal');
+      // Update balance and transactions
+      updateBalance();
+      loadRecentTransactions();
+    }
+
+    function requestMoney(event) {
+      event.preventDefault();
+      showToast('Money request sent!', 'success');
+      closeModal('requestMoneyModal');
+    }
+
+    // Toast notification
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-xl text-white font-medium ${
+        type === 'success' ? 'bg-emerald-500' : 
+        type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+      }`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+    // Load data functions
+    function loadRecentTransactions() {
+      const container = document.getElementById('recentTransactions');
+      const transactions = [
+        { type: 'debit', merchant: 'Swiggy', amount: 450, time: '2 hours ago', category: 'Food' },
+        { type: 'credit', merchant: 'Salary', amount: 75000, time: '1 day ago', category: 'Income' },
+        { type: 'debit', merchant: 'Uber', amount: 120, time: '2 days ago', category: 'Transport' },
+        { type: 'debit', merchant: 'Amazon', amount: 2500, time: '3 days ago', category: 'Shopping' }
+      ];
+
+      container.innerHTML = transactions.map(txn => `
+        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800/30">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-lg ${txn.type === 'credit' ? 'bg-emerald-500/20' : 'bg-orange-500/20'} flex items-center justify-center">
+              <i data-lucide="${txn.type === 'credit' ? 'arrow-down' : 'arrow-up'}" class="h-5 w-5 ${txn.type === 'credit' ? 'text-emerald-400' : 'text-orange-400'}"></i>
+            </div>
+            <div>
+              <p class="font-medium">${txn.merchant}</p>
+              <p class="text-sm text-slate-400">${txn.category} • ${txn.time}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="font-semibold ${txn.type === 'credit' ? 'text-emerald-400' : 'text-orange-400'}">
+              ${txn.type === 'credit' ? '+' : '-'}₹ ${txn.amount.toLocaleString()}
+            </p>
+          </div>
+        </div>
+      `).join('');
+      
+      lucide.createIcons();
+    }
+
+    function loadActiveGoals() {
+      const container = document.getElementById('activeGoals');
+      const goals = [
+        { name: 'Emergency Fund', target: 100000, current: 45230, deadline: 'Dec 2024' },
+        { name: 'Vacation', target: 50000, current: 15000, deadline: 'Mar 2025' }
+      ];
+
+      container.innerHTML = goals.map(goal => {
+        const progress = (goal.current / goal.target) * 100;
+        return `
+          <div class="p-3 rounded-xl bg-slate-800/30">
+            <div class="flex items-center justify-between mb-2">
+              <p class="font-medium text-sm">${goal.name}</p>
+              <p class="text-xs text-slate-400">${progress.toFixed(0)}%</p>
+            </div>
+            <div class="w-full bg-slate-700 rounded-full h-2 mb-2">
+              <div class="bg-gradient-to-r from-teal-500 to-cyan-400 h-2 rounded-full" style="width: ${progress}%"></div>
+            </div>
+            <div class="flex items-center justify-between text-xs text-slate-400">
+              <span>₹ ${goal.current.toLocaleString()} / ₹ ${goal.target.toLocaleString()}</span>
+              <span>${goal.deadline}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateBalance() {
+      // Simulate balance update
+      const currentBalance = parseFloat(document.getElementById('totalBalance').textContent.replace(/[₹,]/g, ''));
+      const newBalance = currentBalance + Math.random() * 1000 - 500;
+      document.getElementById('totalBalance').textContent = `₹ ${newBalance.toLocaleString()}`;
+    }
+
+    // Load initial data
+    document.addEventListener('DOMContentLoaded', function() {
+      loadRecentTransactions();
+      loadActiveGoals();
+    });
+  </script>
+
+  <!-- Lucide icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>lucide.createIcons();</script>
+</body>
+</html>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>
