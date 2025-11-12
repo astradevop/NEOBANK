@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="flex h-screen dashboard-bg">
+  <!-- Enhanced Sidebar -->
+  <aside id="sidebar" class="w-64 sidebar-enhanced flex flex-col shadow-2xl">
+    <!-- Logo -->
+    <div class="p-6 border-b border-slate-800/50">
+      <a href="{% url 'index' %}" class="flex items-center gap-3">
+        <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-400 text-slate-900 font-black">N</span>
+        <span class="text-xl font-bold">NeoBank</span>
+      </a>
+    </div>
+
+    <!-- Enhanced Navigation -->
+    <nav class="flex-1 p-4 space-y-3">
+      <a href="{% url 'dashboard:home' %}" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl bg-gradient-to-r from-teal-600/30 to-cyan-500/20 text-teal-300 border border-teal-600/40 shadow-lg shadow-teal-900/20">
+        <i data-lucide="home" class="h-5 w-5"></i>
+        <span class="font-medium">Dashboard</span>
+      </a>
+    </nav>
+
+    <!-- User Profile -->
+    <div class="p-4 border-t border-slate-800/50">
+      <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/30">
+        <div class="h-10 w-10 rounded-full bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center text-slate-900 font-semibold">
+          {{ user.full_name|slice:":2"|upper }}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-slate-200 truncate">{{ user.full_name }}</p>
+          <p class="text-xs text-slate-400 truncate">{{ user.email }}</p>
+          <p class="text-xs text-teal-400 font-mono mt-1">ID: {{ customer_id }}</p>
+        </div>
+        <a href="{% url 'accounts:logout' %}" class="p-1 rounded-lg hover:bg-slate-700/50 text-slate-400 hover:text-slate-300" title="Logout">
+          <i data-lucide="log-out" class="h-4 w-4"></i>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <!-- Top Bar -->
+    <header class="bg-slate-900/30 border-b border-slate-800/50 px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <button id="sidebarToggle" class="p-2 rounded-lg hover:bg-slate-800/50 text-slate-400 hover:text-slate-300 lg:hidden">
+            <i data-lucide="menu" class="h-5 w-5"></i>
+          </button>
+          <h1 class="text-2xl font-bold">Overview</h1>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <!-- User Menu -->
+          <div class="flex items-center gap-3">
+            <div class="h-8 w-8 rounded-full bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center text-slate-900 font-semibold text-sm">
+              {{ user.full_name|slice:":2"|upper }}
+            </div>
+            <div class="hidden md:block">
+              <span class="text-sm font-medium text-slate-200">{{ user.full_name }}</span>
+              <span class="text-xs text-teal-400 font-mono ml-2">ID: {{ customer_id }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="flex-1 overflow-y-auto p-6">
+      <!-- Page Title -->
+      <div class="mb-6">
+        <h2 class="text-3xl font-bold">Welcome back, {{ user.full_name }}!</h2>
+        <p class="text-slate-400 mt-1">Here's what's happening with your money today.</p>
+      </div>
+
+      <!-- Enhanced KPI Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="metric-animate stat-card card-hover rounded-3xl p-8 shadow-xl">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex-1">
+              <p class="text-sm font-medium text-slate-400 mb-2">Total Balance</p>
+              {% if show_balance %}
+              <p id="totalBalance" class="text-3xl font-bold number-counter bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">₹ {{ account.balance|floatformat:2 }}</p>
+              {% else %}
+              <p class="text-3xl font-bold number-counter bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">••••••</p>
+              {% endif %}
+            </div>
+            <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center shadow-lg balance-glow">
+              <i data-lucide="wallet" class="h-8 w-8 text-slate-900"></i>
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center text-sm bg-emerald-500/10 px-3 py-2 rounded-xl border border-emerald-400/20">
+              <i data-lucide="trending-up" class="h-4 w-4 text-emerald-400 mr-2"></i>
+              <span class="text-emerald-400 font-semibold">+{{ balance_trend|floatformat:1 }}%</span>
+            </div>
+            <span class="text-slate-500 text-sm">vs last month</span>
+          </div>
+        </div>
+
+        <div class="metric-animate stat-card card-hover rounded-3xl p-8 shadow-xl">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex-1">
+              <p class="text-sm font-medium text-slate-400 mb-2">Monthly Spending</p>
+              <p id="monthlySpending" class="text-3xl font-bold number-counter bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">₹ {{ monthly_spending|floatformat:2 }}</p>
+            </div>
+            <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-400 flex items-center justify-center shadow-lg">
+              <i data-lucide="credit-card" class="h-8 w-8 text-white"></i>
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center text-sm bg-emerald-500/10 px-3 py-2 rounded-xl border border-emerald-400/20">
+              <i data-lucide="trending-down" class="h-4 w-4 text-emerald-400 mr-2"></i>
+              <span class="text-emerald-400 font-semibold">{{ spending_trend|floatformat:1 }}%</span>
+            </div>
+            <span class="text-slate-500 text-sm">vs last month</span>
+          </div>
+        </div>
+
+        <div class="metric-animate stat-card card-hover rounded-3xl p-8 shadow-xl">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex-1">
+              <p class="text-sm font-medium text-slate-400 mb-2">Savings Rate</p>
+              <p id="savingsRate" class="text-3xl font-bold number-counter bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">{{ savings_rate|floatformat:1 }}%</p>
+            </div>
+            <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg">
+              <i data-lucide="piggy-bank" class="h-8 w-8 text-white"></i>
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center text-sm bg-emerald-500/10 px-3 py-2 rounded-xl border border-emerald-400/20">
+              <i data-lucide="trending-up" class="h-4 w-4 text-emerald-400 mr-2"></i>
+              <span class="text-emerald-400 font-semibold">+2.1%</span>
+            </div>
+            <span class="text-slate-500 text-sm">vs last month</span>
+          </div>
+        </div>
+
+        <div class="metric-animate stat-card card-hover rounded-3xl p-8 shadow-xl">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex-1">
+              <p class="text-sm font-medium text-slate-400 mb-2">Credit Score</p>
+              {% if show_credit_score %}
+              <p id="creditScore" class="text-3xl font-bold number-counter bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">{{ credit_score }}</p>
+              <p id="creditRating" class="text-sm text-slate-400 mt-1">{{ credit_rating }}</p>
+              {% else %}
+              <p class="text-3xl font-bold number-counter bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">••••</p>
+              <p class="text-sm text-slate-400 mt-1">Hidden</p>
+              {% endif %}
+            </div>
+            <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-400 flex items-center justify-center shadow-lg">
+              <i data-lucide="award" class="h-8 w-8 text-white"></i>
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center text-sm bg-emerald-500/10 px-3 py-2 rounded-xl border border-emerald-400/20">
+              <i data-lucide="trending-up" class="h-4 w-4 text-emerald-400 mr-2"></i>
+              <span class="text-emerald-400 font-semibold">+{{ credit_score_trend }}</span>
+            </div>
+            <span class="text-slate-500 text-sm">vs last month</span>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Main Content Grid -->
+      <div class="grid lg:grid-cols-3 gap-6">
+        <!-- Left Column -->
+        <div class="lg:col-span-2 space-y-6">
+          <!-- Account Summary -->
+          <div class="card-hover rounded-2xl border border-white/10 bg-white/5 p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold">Account Summary</h3>
+            </div>
+            <div class="space-y-4">
+              <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800/30">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center">
+                    <i data-lucide="wallet" class="h-5 w-5 text-slate-900"></i>
+                  </div>
+                  <div>
+                    <p class="font-medium">Main Account</p>
+                    <p class="text-sm text-slate-400">Customer ID: {{ customer_id }} | •••• {{ account.account_number|slice:"-4:" }}</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="font-semibold">₹ {{ account.balance|floatformat:2 }}</p>
+                  <p class="text-sm text-emerald-400">Available: ₹ {{ account.balance|floatformat:2 }}</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800/30">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center">
+                    <i data-lucide="piggy-bank" class="h-5 w-5 text-white"></i>
+                  </div>
+                  <div>
+                    <p class="font-medium">Savings Pot</p>
+                    <p class="text-sm text-slate-400">Emergency Fund</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="font-semibold">₹ {{ savings_pot_balance|floatformat:2 }}</p>
+                  <p class="text-sm text-emerald-400">No contributions this month</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column -->
+        <div class="space-y-6">
+          <!-- Credit Card Preview -->
+          <div class="card-hover rounded-2xl border border-white/10 bg-white/5 p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold">NeoCard</h3>
+              <span class="px-2 py-1 text-xs rounded-md bg-emerald-500/15 text-emerald-300 flex items-center gap-1">
+                <i data-lucide="check-circle" class="h-4 w-4"></i> Active
+              </span>
+            </div>
+            <div class="space-y-4">
+              <div class="p-4 rounded-xl bg-gradient-to-br from-slate-800 to-slate-700 border border-slate-600/50">
+                <div class="flex items-center justify-between mb-3">
+                  <p class="text-sm text-slate-300">Available Credit</p>
+                  <i data-lucide="credit-card" class="h-5 w-5 text-slate-400"></i>
+                </div>
+                <p class="text-2xl font-bold">₹ {{ credit_card_bill|floatformat:2 }}</p>
+                <p class="text-sm text-slate-400 mt-1">Credit limit based on your score</p>
+              </div>
+              <div class="grid grid-cols-2 gap-3 text-sm">
+                <div class="p-3 rounded-lg bg-slate-800/50">
+                  <p class="text-slate-400">Current Bill</p>
+                  <p class="font-semibold">₹ {{ credit_card_bill|floatformat:2 }}</p>
+                </div>
+                <div class="p-3 rounded-lg bg-slate-800/50">
+                  <p class="text-slate-400">Due Date</p>
+                  <p class="font-semibold">{{ credit_card_due_date }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Financial Health Score -->
+          <div class="card-hover rounded-2xl border border-white/10 bg-white/5 p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold">Financial Health</h3>
+            </div>
+            <div class="text-center">
+              <div class="relative w-24 h-24 mx-auto mb-4">
+                <svg class="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="8" fill="none" class="text-slate-700"></circle>
+                  <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="8" fill="none" stroke-dasharray="251.2" stroke-dashoffset="50.24" class="text-emerald-400"></circle>
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <span class="text-2xl font-bold">{{ financial_health_score|floatformat:0 }}</span>
+                </div>
+              </div>
+              <p class="text-sm text-slate-400">Great job! Keep it up.</p>
+            </div>
+          </div>
+
+          <!-- Active Goals -->
+          <div class="card-hover rounded-2xl border border-white/10 bg-white/5 p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold">Active Goals</h3>
+            </div>
+            <div id="activeGoals" class="space-y-3">
+              <div class="text-center py-4">
+                <i data-lucide="target" class="h-8 w-8 text-slate-600 mx-auto mb-2"></i>
+                <p class="text-slate-400 text-sm">No active goals yet</p>
+                <p class="text-xs text-slate-500 mt-1">Create your first savings goal</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  // Sidebar toggle for mobile
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebar = document.getElementById('sidebar');
+  
+  if (sidebarToggle && sidebar) {
+    sidebarToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('-translate-x-full');
+    });
+  }
+</script>
+{% endblock %}

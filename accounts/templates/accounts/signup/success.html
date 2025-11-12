@@ -1,0 +1,78 @@
+{% extends 'accounts/signup/base_signup.html' %}
+
+{% block content %}
+<!-- Success State -->
+<div class="success-animation">
+  <div class="text-center mb-6">
+    <div class="mx-auto h-14 w-14 rounded-2xl bg-emerald-500 text-slate-900 flex items-center justify-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20.3 7.7l-1.4-1.4z"/></svg>
+    </div>
+    <h3 class="mt-4 text-2xl font-bold">Welcome to NeoBank!</h3>
+    <p class="mt-1 text-slate-300">Your account has been created successfully.</p>
+  </div>
+
+  <div class="rounded-2xl border border-white/10 bg-white/5 p-6 mb-6">
+    <h4 class="text-lg font-semibold mb-4 flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+        <line x1="8" y1="21" x2="16" y2="21"></line>
+        <line x1="12" y1="17" x2="12" y2="21"></line>
+      </svg>
+      Account Details
+    </h4>
+    <div class="grid gap-3 text-sm">
+      <div class="flex justify-between">
+        <span class="text-slate-400">Username:</span>
+        <span class="font-mono">{{ account_details.username }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-slate-400">Account Number:</span>
+        <span class="font-mono text-teal-300">{{ account_details.account_number }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-slate-400">Full Name:</span>
+        <span>{{ account_details.full_name }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-slate-400">Email:</span>
+        <span>{{ account_details.email }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-slate-400">Phone:</span>
+        <span class="font-mono">{{ account_details.phone }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-slate-400">Created:</span>
+        <span>{{ account_details.created_at|date:"M d, Y H:i" }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-slate-400">Credit Score:</span>
+        <span class="font-mono text-purple-300">{{ account_details.credit_score }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-slate-400">Account Limit:</span>
+        <span class="font-mono text-emerald-300">₹{{ account_details.approved_limit|floatformat:0 }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="rounded-xl bg-blue-500/10 border border-blue-500/20 p-4 mb-6">
+    <div class="flex gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="m9 12 2 2 4-4"></path>
+      </svg>
+      <div class="text-sm">
+        <p class="text-blue-300 font-medium">Account details sent to your email</p>
+        <p class="text-blue-200/80 mt-1">Please keep this information secure and verify your email to activate all features.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center">
+    <a href="{% url 'accounts:login' %}" class="inline-flex px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-medium transition-colors duration-200">
+      Access Dashboard
+    </a>
+  </div>
+</div>
+{% endblock %}

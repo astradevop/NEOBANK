@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NeoBank — Experience the Future of Banking</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Global Styles -->
+  <style>
+    html {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    .glass {
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .card-hover {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.05);
+    }
+    .hide-scrollbar {
+      scrollbar-width: none;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Enhanced animations */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33% { transform: translateY(-10px) rotate(1deg); }
+      66% { transform: translateY(5px) rotate(-1deg); }
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(20, 184, 166, 0.3); }
+      50% { box-shadow: 0 0 40px rgba(20, 184, 166, 0.6); }
+    }
+
+    .blob {
+      animation: float 6s ease-in-out infinite;
+      filter: blur(2px);
+    }
+
+    .hero-gradient {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%);
+      position: relative;
+    }
+
+    .hero-gradient::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 50%, rgba(20, 184, 166, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(34, 211, 238, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .text-shimmer {
+      background: linear-gradient(135deg, #f1f5f9, #14b8a6, #22d3ee, #f1f5f9);
+      background-size: 300% 300%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .feature-card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .feature-card:hover {
+      background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+      border: 1px solid rgba(20, 184, 166, 0.3);
+      transform: translateY(-8px);
+    }
+
+    .floating-icons {
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .floating-icons:nth-child(2) {
+      animation-delay: -1s;
+    }
+
+    .floating-icons:nth-child(3) {
+      animation-delay: -2s;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100">
+<header class="relative">
+  <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+    <div class="blob absolute -top-24 -left-24 w-80 h-80 rounded-full bg-teal-600/30"></div>
+    <div class="blob absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-cyan-500/20" style="animation-delay: -3s"></div>
+  </div>
+
+  <nav class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
+    <a href=# class="flex items-center gap-2">
+      <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-400 text-slate-900 font-black">N</span>
+      <span class="text-lg font-semibold tracking-tight">NeoBank</span>
+    </a>
+    <div class="hidden md:flex items-center gap-8 text-sm text-slate-300">
+      <a href="#features" class="hover:text-white">Features</a>
+      <a href="#security" class="hover:text-white">Security</a>
+      <a href="#pricing" class="hover:text-white">Pricing</a>
+      <a href="#faq" class="hover:text-white">FAQ</a>
+    </div>
+    <div class="hidden md:flex items-center gap-3">
+      <a href="{% url 'accounts:login' %}" class="px-6 py-3 bg-teal-600 text-white rounded-xl font-semibold hover:bg-teal-500">Login</a>
+      <a href="{% url 'accounts:signup' %}" class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white">Open Account</a>
+    </div>
+    <button id="menuBtn" class="md:hidden p-2 rounded-lg border border-slate-700/70" aria-label="Open menu">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </nav>
+
+  <div id="mobileMenu" class="md:hidden hidden relative z-10 mx-4 rounded-2xl glass p-4">
+    <div class="flex flex-col gap-2 text-slate-200">
+      <a href="#features" class="px-3 py-2 rounded-lg hover:bg-white/5">Features</a>
+      <a href="#security" class="px-3 py-2 rounded-lg hover:bg-white/5">Security</a>
+      <a href="#pricing" class="px-3 py-2 rounded-lg hover:bg-white/5">Pricing</a>
+      <a href="#faq" class="px-3 py-2 rounded-lg hover:bg-white/5">FAQ</a>
+      <div class="h-px bg-white/10 my-2"></div>
+      <a href="{% url 'accounts:login' %}" class="px-3 py-2 rounded-lg border border-white/10">Log in</a>
+      <a href="{% url 'accounts:signup' %}" class="px-3 py-2 rounded-lg bg-teal-600 text-white">Open Account</a>
+    </div>
+  </div>
+</header>
+
+    <!-- ====== Hero ====== -->
+    <section class="relative overflow-hidden hero-gradient">
+      <!-- Floating elements -->
+      <div class="absolute inset-0 pointer-events-none">
+        <div class="floating-icons absolute top-20 left-10 w-6 h-6 text-teal-400/30">
+          <i data-lucide="coins"></i>
+        </div>
+        <div class="floating-icons absolute top-40 right-20 w-8 h-8 text-cyan-400/20">
+          <i data-lucide="trending-up"></i>
+        </div>
+        <div class="floating-icons absolute bottom-32 left-1/4 w-5 h-5 text-emerald-400/25">
+          <i data-lucide="shield-check"></i>
+        </div>
+      </div>
+
+      <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+        <div class="grid lg:grid-cols-12 gap-12 items-center">
+          <!-- Left -->
+          <div class="lg:col-span-7 space-y-8">
+            <div class="inline-flex items-center gap-2 rounded-full border border-teal-700/40 bg-teal-600/10 px-4 py-2 text-sm text-teal-300 backdrop-blur-sm">
+              <span class="h-2 w-2 rounded-full bg-teal-400 animate-pulse"></span>
+              Now with UPI Autopay & Rupay Credit
+              <i data-lucide="sparkles" class="h-4 w-4 ml-1"></i>
+            </div>
+
+            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-none">
+              Experience the <span class="text-shimmer">Future</span><br class="hidden sm:block"/> of Banking
+            </h1>
+
+            <p class="text-slate-300 text-xl leading-relaxed max-w-2xl">
+              Instant accounts, smart cards, and AI-powered money insights. All in an ultra-fast, ultra-secure app built for the way you live.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4">
+              <a id="cta" href="{% url 'accounts:signup' %}" class="group px-8 py-4 rounded-2xl bg-gradient-to-r from-teal-500 to-cyan-400 text-slate-900 font-bold shadow-2xl shadow-teal-900/30 hover:shadow-teal-900/50 transition-all duration-300 transform hover:scale-105">
+                <span class="flex items-center gap-2">
+                  Open your free account
+                  <i data-lucide="arrow-right" class="h-5 w-5 group-hover:translate-x-1 transition-transform"></i>
+                </span>
+              </a>
+              <a href="#features" class="px-8 py-4 rounded-2xl border border-slate-700/70 text-slate-200 hover:border-teal-500/50 hover:bg-teal-500/5 transition-all duration-300 backdrop-blur-sm">
+                <span class="flex items-center gap-2">
+                  See features
+                  <i data-lucide="play-circle" class="h-5 w-5"></i>
+                </span>
+              </a>
+            </div>
+
+            <div class="flex items-center gap-8 text-sm text-slate-400">
+              <div class="flex items-center gap-2 bg-slate-800/30 px-3 py-2 rounded-lg backdrop-blur-sm">
+                <i data-lucide="shield-check" class="h-5 w-5 text-teal-400"></i>
+                FDIC-equivalent partner bank
+              </div>
+              <div class="flex items-center gap-2 bg-slate-800/30 px-3 py-2 rounded-lg backdrop-blur-sm">
+                <i data-lucide="lock" class="h-5 w-5 text-teal-400"></i>
+                256-bit encryption
+              </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-3 gap-6 pt-6 border-t border-slate-700/50">
+              <div class="text-center">
+                <p class="text-2xl font-bold text-teal-400">100K+</p>
+                <p class="text-sm text-slate-400">Happy Users</p>
+              </div>
+              <div class="text-center">
+                <p class="text-2xl font-bold text-cyan-400">₹50Cr+</p>
+                <p class="text-sm text-slate-400">Transactions</p>
+              </div>
+              <div class="text-center">
+                <p class="text-2xl font-bold text-emerald-400">4.9★</p>
+                <p class="text-sm text-slate-400">App Rating</p>
+              </div>
+            </div>
+          </div>
+          <!-- Right visual -->
+          <div class="lg:col-span-5">
+            <div class="relative">
+              <!-- Enhanced glow effects -->
+              <div class="absolute -inset-8 bg-gradient-to-tr from-teal-500/30 via-cyan-400/20 to-purple-500/10 rounded-3xl blur-3xl opacity-60"></div>
+              <div class="absolute -inset-4 bg-gradient-to-br from-emerald-500/20 via-teal-400/15 to-cyan-300/10 rounded-3xl blur-xl"></div>
+
+              <div class="relative grid gap-6 transform rotate-1">
+                <!-- Main Balance Card -->
+                <div class="card-hover rounded-3xl bg-gradient-to-br from-slate-900/90 to-slate-800/80 border border-white/20 p-6 backdrop-blur-xl shadow-2xl">
+                  <div class="flex items-center justify-between mb-4">
+                    <div>
+                      <p class="text-sm text-slate-400 flex items-center gap-2">
+                        <i data-lucide="eye" class="h-4 w-4"></i>
+                        Main Balance
+                      </p>
+                      <p class="mt-2 text-4xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">₹ 1,24,580.45</p>
+                    </div>
+                    <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center text-slate-900 shadow-lg">
+                      <i data-lucide="wallet" class="h-7 w-7"></i>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-400/20 p-4">
+                      <p class="text-xs text-emerald-400 flex items-center justify-center gap-1 mb-1">
+                        <i data-lucide="trending-up" class="h-4 w-4"></i> Spent
+                      </p>
+                      <p class="font-bold text-white">₹24,310</p>
+                    </div>
+                    <div class="rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/10 border border-cyan-400/20 p-4">
+                      <p class="text-xs text-cyan-400 flex items-center justify-center gap-1 mb-1">
+                        <i data-lucide="piggy-bank" class="h-4 w-4"></i> Saved
+                      </p>
+                      <p class="font-bold text-white">₹8,900</p>
+                    </div>
+                    <div class="rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/10 border border-purple-400/20 p-4">
+                      <p class="text-xs text-purple-400 flex items-center justify-center gap-1 mb-1">
+                        <i data-lucide="gift" class="h-4 w-4"></i> Points
+                      </p>
+                      <p class="font-bold text-white">2,340</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Credit Card -->
+                <div class="card-hover rounded-3xl bg-gradient-to-br from-slate-900/90 to-slate-800/80 border border-white/20 p-6 backdrop-blur-xl shadow-2xl transform -rotate-1">
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-4">
+                      <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center text-slate-900 shadow-lg">
+                        <i data-lucide="credit-card" class="h-6 w-6"></i>
+                      </div>
+                      <div>
+                        <p class="font-bold text-lg">NeoCard •••• 8427</p>
+                        <p class="text-sm text-teal-400 flex items-center gap-1">
+                          <i data-lucide="nfc" class="h-4 w-4"></i>
+                          Tap to pay enabled
+                        </p>
+                      </div>
+                    </div>
+                    <div class="px-3 py-1 text-xs rounded-full bg-emerald-500/20 text-emerald-300 flex items-center gap-1 border border-emerald-400/30">
+                      <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      Active
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-4">
+                    <div class="rounded-2xl bg-gradient-to-br from-white/10 to-white/5 p-4 border border-white/10">
+                      <p class="text-slate-400 text-sm flex items-center gap-2 mb-2">
+                        <i data-lucide="gauge" class="h-4 w-4"></i> Available
+                      </p>
+                      <p class="font-bold text-white">₹1,25,690</p>
+                    </div>
+                    <div class="rounded-2xl bg-gradient-to-br from-white/10 to-white/5 p-4 border border-white/10">
+                      <p class="text-slate-400 text-sm flex items-center gap-2 mb-2">
+                        <i data-lucide="calendar" class="h-4 w-4"></i> Due Date
+                      </p>
+                      <p class="font-bold text-white">28 Aug</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Smart Insights Card -->
+                <div class="card-hover rounded-3xl bg-gradient-to-br from-slate-900/90 to-slate-800/80 border border-white/20 p-6 backdrop-blur-xl shadow-2xl transform rotate-0.5">
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                      <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-400 flex items-center justify-center shadow-lg">
+                        <i data-lucide="brain" class="h-5 w-5 text-white"></i>
+                      </div>
+                      <p class="font-bold text-lg">AI Insights</p>
+                    </div>
+                    <span class="text-xs text-slate-400 flex items-center gap-1 bg-slate-800/50 px-2 py-1 rounded-lg">
+                      <i data-lucide="clock" class="h-3 w-3"></i> Live
+                    </span>
+                  </div>
+                  <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-red-500/10 to-orange-500/5 border-l-2 border-red-400">
+                      <span class="text-slate-300 flex items-center gap-2">
+                        <i data-lucide="shopping-basket" class="h-4 w-4 text-red-400"></i> Groceries
+                      </span>
+                      <span class="font-bold text-white">₹3,240</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-orange-500/10 to-yellow-500/5 border-l-2 border-orange-400">
+                      <span class="text-slate-300 flex items-center gap-2">
+                        <i data-lucide="utensils" class="h-4 w-4 text-orange-400"></i> Dining
+                      </span>
+                      <span class="font-bold text-white">₹1,870</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-green-500/10 to-teal-500/5 border-l-2 border-green-400">
+                      <span class="text-slate-300 flex items-center gap-2">
+                        <i data-lucide="bus" class="h-4 w-4 text-green-400"></i> Transport
+                      </span>
+                      <span class="font-bold text-white">₹940</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== Logos / Trust ====== -->
+    <section class="py-10 border-y border-white/5">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <p class="text-center text-sm uppercase tracking-widest text-slate-400">Trusted by 100,000+ users and leading partners</p>
+        <div class="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 items-center opacity-80">
+          <div class="h-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-300"><i data-lucide="shield" class="h-5 w-5"></i></div>
+          <div class="h-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-300"><i data-lucide="building-2" class="h-5 w-5"></i></div>
+          <div class="h-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-300"><i data-lucide="badge-percent" class="h-5 w-5"></i></div>
+          <div class="h-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-300"><i data-lucide="globe" class="h-5 w-5"></i></div>
+          <div class="h-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-300"><i data-lucide="zap" class="h-5 w-5"></i></div>
+          <div class="h-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-300"><i data-lucide="star" class="h-5 w-5"></i></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== Features ====== -->
+    <section id="features" class="py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto">
+          <h2 class="text-3xl sm:text-4xl font-bold">Everything you need, in one clean app</h2>
+          <p class="mt-3 text-slate-300">Open an account in minutes, move money instantly, and grow your savings automatically.</p>
+        </div>
+
+        <div class="mt-16 grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Feature cards with enhanced design -->
+          <div class="feature-card card-hover rounded-3xl p-8 group">
+            <div class="relative">
+              <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-xl group-hover:scale-110 transition-transform duration-300">
+                <i data-lucide="zap" class="h-8 w-8"></i>
+              </div>
+              <div class="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-emerald-400 animate-ping opacity-75"></div>
+            </div>
+            <h3 class="mt-6 font-bold text-xl text-white group-hover:text-teal-300 transition-colors">Instant Account</h3>
+            <p class="mt-3 text-slate-300 leading-relaxed">PAN + Aadhaar + OTP onboarding. Get your virtual card instantly and start transacting within minutes.</p>
+            <div class="mt-4 flex items-center text-sm text-teal-400">
+              <i data-lucide="clock" class="h-4 w-4 mr-1"></i>
+              2 min setup
+            </div>
+          </div>
+
+          <div class="feature-card card-hover rounded-3xl p-8 group">
+            <div class="relative">
+              <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white shadow-xl group-hover:scale-110 transition-transform duration-300">
+                <i data-lucide="globe" class="h-8 w-8"></i>
+              </div>
+              <div class="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-cyan-400 animate-ping opacity-75"></div>
+            </div>
+            <h3 class="mt-6 font-bold text-xl text-white group-hover:text-cyan-300 transition-colors">UPI & Global</h3>
+            <p class="mt-3 text-slate-300 leading-relaxed">UPI, QR codes, bank transfers, and international cards with competitive FX rates worldwide.</p>
+            <div class="mt-4 flex items-center text-sm text-cyan-400">
+              <i data-lucide="map" class="h-4 w-4 mr-1"></i>
+              190+ countries
+            </div>
+          </div>
+
+          <div class="feature-card card-hover rounded-3xl p-8 group">
+            <div class="relative">
+              <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-400 flex items-center justify-center text-white shadow-xl group-hover:scale-110 transition-transform duration-300">
+                <i data-lucide="brain" class="h-8 w-8"></i>
+              </div>
+              <div class="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-purple-400 animate-ping opacity-75"></div>
+            </div>
+            <h3 class="mt-6 font-bold text-xl text-white group-hover:text-purple-300 transition-colors">AI Insights</h3>
+            <p class="mt-3 text-slate-300 leading-relaxed">Smart spending categorization, budgets, and personalized recommendations powered by AI.</p>
+            <div class="mt-4 flex items-center text-sm text-purple-400">
+              <i data-lucide="sparkles" class="h-4 w-4 mr-1"></i>
+              AI-powered
+            </div>
+          </div>
+
+          <div class="feature-card card-hover rounded-3xl p-8 group">
+            <div class="relative">
+              <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-400 flex items-center justify-center text-white shadow-xl group-hover:scale-110 transition-transform duration-300">
+                <i data-lucide="target" class="h-8 w-8"></i>
+              </div>
+              <div class="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-orange-400 animate-ping opacity-75"></div>
+            </div>
+            <h3 class="mt-6 font-bold text-xl text-white group-hover:text-orange-300 transition-colors">Smart Goals</h3>
+            <p class="mt-3 text-slate-300 leading-relaxed">Automated savings with round-ups, goal tracking, and intelligent rules like payday deposits.</p>
+            <div class="mt-4 flex items-center text-sm text-orange-400">
+              <i data-lucide="trending-up" class="h-4 w-4 mr-1"></i>
+              Auto-save
+            </div>
+          </div>
+
+          <div class="feature-card card-hover rounded-3xl p-8 group">
+            <div class="relative">
+              <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-400 flex items-center justify-center text-white shadow-xl group-hover:scale-110 transition-transform duration-300">
+                <i data-lucide="gift" class="h-8 w-8"></i>
+              </div>
+              <div class="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-yellow-400 animate-ping opacity-75"></div>
+            </div>
+            <h3 class="mt-6 font-bold text-xl text-white group-hover:text-yellow-300 transition-colors">Rewards</h3>
+            <p class="mt-3 text-slate-300 leading-relaxed">Earn cashbacks, points, and exclusive offers with our curated network of brand partners.</p>
+            <div class="mt-4 flex items-center text-sm text-yellow-400">
+              <i data-lucide="percent" class="h-4 w-4 mr-1"></i>
+              Up to 5% back
+            </div>
+          </div>
+
+          <div class="feature-card card-hover rounded-3xl p-8 group">
+            <div class="relative">
+              <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-400 flex items-center justify-center text-white shadow-xl group-hover:scale-110 transition-transform duration-300">
+                <i data-lucide="headphones" class="h-8 w-8"></i>
+              </div>
+              <div class="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-green-400 animate-ping opacity-75"></div>
+            </div>
+            <h3 class="mt-6 font-bold text-xl text-white group-hover:text-green-300 transition-colors">24×7 Support</h3>
+            <p class="mt-3 text-slate-300 leading-relaxed">Chat, call, or email support available around the clock for your complete peace of mind.</p>
+            <div class="mt-4 flex items-center text-sm text-green-400">
+              <i data-lucide="clock" class="h-4 w-4 mr-1"></i>
+              Always available
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== Security ====== -->
+    <section id="security" class="py-20 bg-slate-900/40 border-y border-white/5">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-10 items-center">
+        <div>
+          <h2 class="text-3xl sm:text-4xl font-bold">Bank-grade security, by default</h2>
+          <p class="mt-3 text-slate-300">Your money and data are protected with device-binding, biometric login, and end-to-end encryption.</p>
+          <ul class="mt-6 space-y-3 text-slate-300">
+            <li class="flex gap-3"><span class="mt-1 h-2 w-2 rounded-full bg-teal-400"></span> 256-bit TLS and vault-grade key management</li>
+            <li class="flex gap-3"><span class="mt-1 h-2 w-2 rounded-full bg-teal-400"></span> Real-time fraud monitoring & spend limits</li>
+            <li class="flex gap-3"><span class="mt-1 h-2 w-2 rounded-full bg-teal-400"></span> Card controls: freeze, set PIN, enable tap-to-pay</li>
+          </ul>
+        </div>
+        <div class="relative">
+          <div class="absolute -inset-6 bg-gradient-to-tr from-teal-500/20 via-cyan-400/10 to-transparent rounded-3xl blur-2xl"></div>
+          <div class="relative rounded-3xl border border-white/10 bg-white/5 p-6">
+            <div class="grid grid-cols-3 gap-4 text-center">
+              <div class="p-4 rounded-xl bg-slate-950/40">
+                <p class="text-3xl font-bold">256</p>
+                <p class="text-xs text-slate-400">bit TLS</p>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-950/40">
+                <p class="text-3xl font-bold">99.99%</p>
+                <p class="text-xs text-slate-400">Uptime</p>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-950/40">
+                <p class="text-3xl font-bold"><span class="align-top">₹</span>5L</p>
+                <p class="text-xs text-slate-400">Card cover</p>
+              </div>
+            </div>
+            <div class="mt-6 rounded-2xl bg-slate-950/50 p-4 text-sm text-slate-300">
+              <p class="font-semibold">Device Binding</p>
+              <p class="mt-1">Your account can only be accessed from your verified device. New logins require biometric + OTP.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== Pricing ====== -->
+    <section id="pricing" class="py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto">
+          <h2 class="text-3xl sm:text-4xl font-bold">Simple, transparent pricing</h2>
+          <p class="mt-3 text-slate-300">Start free. Upgrade anytime for premium travel & rewards.</p>
+        </div>
+
+        <div class="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Free -->
+          <div class="card-hover rounded-2xl border border-white/10 bg-white/5 p-6 flex flex-col">
+            <h3 class="text-xl font-semibold">Starter</h3>
+            <p class="text-slate-400 mt-1">Everything to get going.</p>
+            <div class="mt-5 text-4xl font-extrabold">₹0<span class="text-base font-medium text-slate-400">/mo</span></div>
+            <ul class="mt-6 space-y-3 text-sm text-slate-300">
+              <li class="flex items-center gap-2"><i data-lucide="badge-check" class="h-4 w-4"></i> Free account & virtual card</li>
+              <li class="flex items-center gap-2"><i data-lucide="banknote" class="h-4 w-4"></i> UPI & bank transfers</li>
+              <li class="flex items-center gap-2"><i data-lucide="chart-pie" class="h-4 w-4"></i> Basic insights</li>
+            </ul>
+            <a href="{% url 'accounts:signup' %}" class="mt-8 inline-flex justify-center px-4 py-2 rounded-xl border border-white/10 hover:border-white/20">Get started</a>
+          </div>
+          <!-- Plus -->
+          <div class="card-hover relative rounded-2xl border border-teal-500/40 bg-gradient-to-b from-teal-600/10 to-white/5 p-6 flex flex-col">
+            <span class="absolute -top-3 right-4 text-xs px-2 py-1 rounded-lg bg-teal-500 text-slate-900 font-semibold flex items-center gap-1">
+              <i data-lucide="flame" class="h-3.5 w-3.5"></i> Popular
+            </span>
+            <h3 class="text-xl font-semibold">Plus</h3>
+            <p class="text-slate-400 mt-1">Rewards & travel perks.</p>
+            <div class="mt-5 text-4xl font-extrabold">₹299<span class="text-base font-medium text-slate-400">/mo</span></div>
+            <ul class="mt-6 space-y-3 text-sm text-slate-300">
+              <li class="flex items-center gap-2"><i data-lucide="sparkles" class="h-4 w-4"></i> 5× rewards on spending</li>
+              <li class="flex items-center gap-2"><i data-lucide="plane" class="h-4 w-4"></i> Airport lounge (2/yr)</li>
+              <li class="flex items-center gap-2"><i data-lucide="chart-line" class="h-4 w-4"></i> Advanced insights</li>
+            </ul>
+            <a href="{% url 'accounts:signup' %}" class="mt-8 inline-flex justify-center px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white">Go Plus</a>
+          </div>
+          <!-- Pro -->
+          <div class="card-hover rounded-2xl border border-white/10 bg-white/5 p-6 flex flex-col">
+            <h3 class="text-xl font-semibold">Pro</h3>
+            <p class="text-slate-400 mt-1">For power users.</p>
+            <div class="mt-5 text-4xl font-extrabold">₹699<span class="text-base font-medium text-slate-400">/mo</span></div>
+            <ul class="mt-6 space-y-3 text-sm text-slate-300">
+              <li class="flex items-center gap-2"><i data-lucide="globe-2" class="h-4 w-4"></i> Global FX at interbank</li>
+              <li class="flex items-center gap-2"><i data-lucide="headset" class="h-4 w-4"></i> Priority support</li>
+              <li class="flex items-center gap-2"><i data-lucide="credit-card" class="h-4 w-4"></i> Metal card</li>
+            </ul>
+            <a href="{% url 'accounts:signup' %}" class="mt-8 inline-flex justify-center px-4 py-2 rounded-xl border border-white/10 hover:border-white/20">Choose Pro</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== FAQ ====== -->
+    <section id="faq" class="py-20 bg-slate-900/40 border-y border-white/5">
+      <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl sm:text-4xl font-bold text-center">Frequently asked</h2>
+        <div class="mt-10 grid md:grid-cols-2 gap-6">
+          <details class="rounded-xl bg-white/5 p-5 border border-white/10">
+            <summary class="font-semibold cursor-pointer flex items-center gap-2">
+              <i data-lucide="landmark" class="h-5 w-5"></i> Is NeoBank a real bank?
+            </summary>
+            <p class="mt-2 text-slate-300 text-sm">We partner with licensed banks to provide deposit products and cards. Funds are protected as per partner-bank regulations.</p>
+          </details>
+          <details class="rounded-xl bg-white/5 p-5 border border-white/10">
+            <summary class="font-semibold cursor-pointer flex items-center gap-2">
+              <i data-lucide="user-plus" class="h-5 w-5"></i> How do I open an account?
+            </summary>
+            <p class="mt-2 text-slate-300 text-sm">Complete quick e-KYC with PAN and Aadhaar, then set up your passcode. You'll get a virtual card instantly.</p>
+          </details>
+          <details class="rounded-xl bg-white/5 p-5 border border-white/10">
+            <summary class="font-semibold cursor-pointer flex items-center gap-2">
+              <i data-lucide="file-text" class="h-5 w-5"></i> Are there fees?
+            </summary>
+            <p class="mt-2 text-slate-300 text-sm">Starter is free. Plus and Pro add premium features for a monthly fee. We're transparent—no hidden charges.</p>
+          </details>
+          <details class="rounded-xl bg-white/5 p-5 border border-white/10">
+            <summary class="font-semibold cursor-pointer flex items-center gap-2">
+              <i data-lucide="globe" class="h-5 w-5"></i> Can I use it abroad?
+            </summary>
+            <p class="mt-2 text-slate-300 text-sm">Yes. Use your card globally with low FX markup. Freeze your card or adjust limits anytime in-app.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== CTA ====== -->
+    <section class="py-20">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-slate-900 via-slate-900 to-slate-900 p-8 sm:p-12">
+          <div class="absolute -inset-1 rounded-3xl bg-gradient-to-r from-teal-500/20 via-cyan-400/10 to-transparent blur-2xl"></div>
+          <div class="relative grid lg:grid-cols-3 gap-6 items-center">
+            <div class="lg:col-span-2">
+              <h3 class="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+                <i data-lucide="sparkle" class="h-6 w-6"></i> Ready to upgrade your money?
+              </h3>
+              <p class="mt-2 text-slate-300">Open an account in minutes. It's fast, secure, and free.</p>
+            </div>
+            <div class="flex gap-3">
+              <a href="{% url 'accounts:signup' %}" class="px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-semibold flex items-center gap-2">
+                <i data-lucide="arrow-right-circle" class="h-5 w-5"></i> Get NeoBank
+              </a>
+              <a href="{% url 'accounts:login' %}" class="px-6 py-3 rounded-xl border border-white/10 flex items-center gap-2">
+                <i data-lucide="log-in" class="h-5 w-5"></i> Log in
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== Footer ====== -->
+    <footer class="py-12 border-t border-white/5">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid md:grid-cols-4 gap-8 text-sm">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-400 text-slate-900 font-black">N</span>
+            <span class="text-lg font-semibold">NeoBank</span>
+          </div>
+          <p class="mt-3 text-slate-400">© <span id="yr"></span> NeoBank Inc.</p>
+        </div>
+        <div>
+          <p class="font-semibold mb-3">Product</p>
+          <ul class="space-y-2 text-slate-300">
+            <li><a class="hover:text-white flex items-center gap-2" href="#features"><i data-lucide="layers" class="h-4 w-4"></i> Features</a></li>
+            <li><a class="hover:text-white flex items-center gap-2" href="#pricing"><i data-lucide="coins" class="h-4 w-4"></i> Pricing</a></li>
+            <li><a class="hover:text-white flex items-center gap-2" href="#faq"><i data-lucide="help-circle" class="h-4 w-4"></i> FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-semibold mb-3">Legal</p>
+          <ul class="space-y-2 text-slate-300">
+            <li class="flex items-center gap-2"><i data-lucide="file-signature" class="h-4 w-4"></i> Terms</li>
+            <li class="flex items-center gap-2"><i data-lucide="shield" class="h-4 w-4"></i> Privacy</li>
+            <li class="flex items-center gap-2"><i data-lucide="cookie" class="h-4 w-4"></i> Cookies</li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-semibold mb-3">Get the app</p>
+          <div class="flex gap-3">
+            <div class="h-10 w-32 rounded-lg bg-white/10 flex items-center justify-center gap-2">
+              <i data-lucide="apple" class="h-5 w-5"></i><span class="text-slate-300 text-xs">App Store</span>
+            </div>
+            <div class="h-10 w-32 rounded-lg bg-white/10 flex items-center justify-center gap-2">
+              <i data-lucide="smartphone" class="h-5 w-5"></i><span class="text-slate-300 text-xs">Play Store</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // mobile menu toggle
+      const btn = document.getElementById('menuBtn');
+      const menu = document.getElementById('mobileMenu');
+      if (btn) btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+      // year
+      document.getElementById('yr').textContent = new Date().getFullYear();
+    </script>
+
+    <!-- Lucide icons (add once) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script> lucide.createIcons(); </script>
+</body>
+</html>
+
